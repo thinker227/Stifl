@@ -4,7 +4,7 @@ namespace Stifl.Types;
 /// A temporary type variable for unification.
 /// </summary>
 /// <param name="Index">The unique index for the variable per AST.</param>
-public sealed record TypeVariable(int Index) : IType
+public sealed class TypeVariable(int Index) : IType
 {
     private IType? substitution = null;
 
@@ -16,7 +16,8 @@ public sealed record TypeVariable(int Index) : IType
     public IType Substitution => substitution switch
     {
         null => this,
-        TypeVariable var => var.Substitution,
+        // Pruning
+        TypeVariable var => substitution = var.Substitution,
         _ => substitution,
     };
 
@@ -27,14 +28,12 @@ public sealed record TypeVariable(int Index) : IType
     /// <remarks>This method can only be call once.</remarks>
     public void Substitute(IType type)
     {
-        if (ReferenceEquals(type, this))
-            throw new InvalidOperationException(
-                $"Cannot substitute type variable {this} for itself.");
+        if (ReferenceEquals(type, this)) return;
 
         if (substitution is not null && !type.Equals(substitution))
             throw new InvalidOperationException(
                 $"t{Index} has already been substituted with {substitution} " +
-                $"and cannot be substituted with incompatible type {type}.");                
+                $"and cannot be substituted with incompatible type {type}.");
 
         substitution = type;
     }
