@@ -90,10 +90,12 @@ file sealed class Solver
         return Occurs(a, b) || Occurs(b, a);
     }
 
-    private static IType Lower(IType t) =>
-        t is TypeVariable var
-            ? var.Substitution
-            : t;
+    private static IType Lower(IType t) => t switch
+    {
+        TypeVariable var => var.Substitution,
+        GeneralizationBuilder builder => builder.Containing,
+        _ => t, 
+    };
 
     private void Unify(IType a, IType b)
     {
