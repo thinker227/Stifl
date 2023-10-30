@@ -44,8 +44,8 @@ Simple ML-inspired purely functional language with [Hindley Milner](https://en.w
 - [x] Symbol binding
 - [ ] Type checking
   - [x] Type annotation
-  - [ ] Constraint generation
-  - [ ] Constraint solver
+  - [x] Constraint generation
+  - [x] Constraint solver
 - [ ] Interpreter
 - [ ] Code generation
   - [ ] Bytecode
