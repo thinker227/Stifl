@@ -25,6 +25,8 @@ internal static class ConstraintSolver
             // TODO: Generate better names for generated type parameters.
             var param = new TypeParameter(variable.ToString());
 
+            // TODO: Add the generated type parameter to the binding generalization.
+            // Placeholder
             variable.Substitute(new TypeParameter($"unsolved_{variable}"));
         }
 
