@@ -69,17 +69,14 @@ file sealed class Solver
         case (TypeVariable va, _):
             if (!Occurs(va, b)) va.Substitute(b);
             break;
-
         case (_, TypeVariable vb):
             if (!Occurs(a, vb)) vb.Substitute(a);
             break;
 
-        case (WellKnownType wa, WellKnownType wb):
-            // Bottom unifies with everything.
-            if (wa.Kind == WellKnownTypeKind.Bottom || wb.Kind == WellKnownTypeKind.Bottom) break;
-
-            if (wa != wb) goto default;
-            
+        // Bottom unifies with everything.
+        case (WellKnownType { Kind: WellKnownTypeKind.Bottom }, _):
+            break;
+        case (_, WellKnownType { Kind: WellKnownTypeKind.Bottom }):
             break;
 
         case (FuncType fa, FuncType fb):
