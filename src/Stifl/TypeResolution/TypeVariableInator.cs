@@ -24,14 +24,7 @@ internal sealed class TypeVariableInator
         return param =>
         {
             vars ??= [];
-
-            if (!vars.TryGetValue(param, out var var))
-            {
-                var = Next();
-                vars[param] = var;
-            }
-
-            return var;
+            return vars.GetOrAdd(param, Next);
         };
     }
 }
