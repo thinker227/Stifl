@@ -31,14 +31,42 @@ internal static partial class ConstraintGeneration
         IEnumerable<Ast.Decl.Binding> bindings,
         TypeSet types,
         ScopeSet scopes,
+        SymbolSet symbols,
         TypeVariableInator variableInator)
     {
         var constraints = new HashSet<Constraint>();
 
+        // Constraint generation has to begin by generating these generalization builder types
+        // so that recursive bindings can reference each other properly.
+        // Constraints for the bindings are added at the same time because it's convenient.
+        var generalizations = new Dictionary<AstOrSymbol, IType>();
         foreach (var binding in bindings)
         {
-            var visitor = new ConstraintGenerationVisitor(types, scopes, variableInator);
+            var type = types[binding];
+            var symbol = symbols[binding];
+            var expressionType = types[binding.Expression];
+
+            var generalization = new GeneralizationBuilder(expressionType);
+            generalizations[binding] = generalization;
+            generalizations[AstOrSymbol.FromT1(symbol)] = generalization;
+
+            constraints.Add(new Constraint.Eq(type, generalization));
+        }
+        // var generalizations = bindings
+        //     .ToDictionary(
+        //         b => AstOrSymbol.FromT1(symbols[b]),
+        //         b => (IType)new GeneralizationBuilder(types[b.Expression]));
+        var typesWithGeneralizations = generalizations.Union(types);
+
+        foreach (var binding in bindings)
+        {
+            var visitor = new ConstraintGenerationVisitor(
+                typesWithGeneralizations,
+                scopes,
+                variableInator);
+            
             visitor.VisitNode(binding);
+
             foreach (var c in visitor.constraints) constraints.Add(c);
         }
 
@@ -90,20 +118,21 @@ file sealed class ConstraintGenerationVisitor(
 
     public override Unit VisitBindingDecl(Ast.Decl.Binding node)
     {
+        // No constraints are generated for the node here
+        // because they have already been generated ahead of being visited.
+
         var expression = GetType(node.Expression);
 
-        IType nodeType;
         if (node.AnnotatedType is not null)
         {
             var annotatedType = ToType(node.AnnotatedType);
             
-            nodeType = annotatedType;
             Eq(expression, annotatedType);
         }
-        else nodeType = expression;
 
-        generalizationBuilder ??= new(nodeType);
-        Eq(node, generalizationBuilder);
+        // This cast *should* be safe because all bindings should have
+        // a generalization builder already registered.
+        generalizationBuilder ??= (GeneralizationBuilder)GetType(node);
 
         VisitNodeOrNull(node.AnnotatedType);
         VisitNode(node.Expression);
@@ -139,14 +168,20 @@ file sealed class ConstraintGenerationVisitor(
     {
         var symbol = scopes[node].Lookup(node.Name)
             ?? throw new InvalidOperationException($"{node.Name} isn't declared");
-        var type = GetType(symbol);
-
+        
         // Identifiers are the only kinds of expressions which pull type information
         // from possibly other bindings, and the retrieved type therefore has to be
         // instantiated to replace potential generalizations with type variables.
-        var instantiated = type.Instantiate(variableInator.Instantiation());
+        // Generalization builders may occur here if the currently visited binding
+        // is recursive, in which case there should be a generalization builder
+        // for the binding.
+        var type = GetType(symbol) switch
+        {
+            GeneralizationBuilder g => g.Containing,
+            var t => t.Instantiate(variableInator.Instantiation()),
+        };
 
-        Eq(node, instantiated);
+        Eq(node, type);
 
         return Default;
     }

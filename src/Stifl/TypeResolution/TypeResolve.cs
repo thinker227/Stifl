@@ -37,7 +37,7 @@ public static class TypeResolve
             // Add the annotations to the types.
             foreach (var (k, v) in annotations) types[k] = v;
 
-            var constraints = ConstraintGeneration.GenerateConstraints(group, types, scopes, variableInator);
+            var constraints = ConstraintGeneration.GenerateConstraints(group, types, scopes, symbols, variableInator);
             ConstraintSolver.Solve(constraints);
 
             var bindingTypes = TypePostProcessing.Process(annotations, scopes, symbols);
