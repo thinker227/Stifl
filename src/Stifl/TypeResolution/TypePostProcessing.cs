@@ -11,26 +11,55 @@ internal static class TypePostProcessing
     /// <param name="scopes">The scopes of the annotated nodes.</param>
     /// <param name="symbols">The symbols to process.</param>
     public static TypeSet Process(
+        IEnumerable<Ast.Decl.Binding> bindings,
         AnnotationSet annotations,
-        ScopeSet scopes,
         SymbolSet symbols)
     {
         var types = new Dictionary<AstOrSymbol, IType>();
-        
-        // Purify type variables into their substitutions.
-        foreach (var (x, variable) in annotations)
-        {
-            var type = variable.Purify();
-            
-            // All unsolved type variables should have been solved by the previous step.
-            // Otherwise, this is probably a bug.
-            if (type is TypeVariable) throw new InvalidOperationException(
-                $"Unexpected type variable {type} remaining after having tried " +
-                "to solve all unsolved type variables after unification.");
 
-            types[x] = type;
+        foreach (var binding in bindings)
+        {
+            // This is a more manual way of purifying the type variable for the
+            // binding without also removing the generalization builder. The
+            // containing type isn't needed here, only the forall types, so
+            // the containing type doesn't need to be purified.
+            var generalization = (GeneralizationBuilder)annotations[binding].Substitution;
+            
+            var processor = new BindingProcessor(generalization, annotations);
+
+            // Looping through nodes and symbols is done like this because there's no
+            // good way of associating a node (and symbol) to its parent binding.
+            var nodes = binding.DescendantsAndSelf<Ast>(n => annotations.ContainsKey(n));
+            foreach (var node in nodes)
+            {
+                types[node] = processor.Node(node);
+
+                if (symbols.TryGetValue(node, out var symbol))
+                    types[AstOrSymbol.FromT1(symbol)] = processor.Symbol(symbol);
+            }
         }
         
         return types;
     }
+}
+
+file sealed class BindingProcessor(
+    GeneralizationBuilder generalization,
+    AnnotationSet annotations)
+{
+    private readonly Dictionary<TypeVariable, TypeParameter> parameters = [];
+
+    public IType Process(AstOrSymbol x) => annotations[x]
+        .Purify()
+        .ReplaceVars(var =>
+            parameters.GetOrAdd(var, () =>
+            {
+                var param = new TypeParameter(var.ToString());
+                generalization.ForallTypes.Add(param);
+                return param;
+            }));
+
+    public IType Node(Ast node) => Process(node);
+
+    public IType Symbol(ISymbol symbol) => Process(AstOrSymbol.FromT1(symbol));
 }

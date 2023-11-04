@@ -40,9 +40,9 @@ public static class TypeResolve
             var constraints = ConstraintGeneration.GenerateConstraints(group, types, scopes, symbols, variableInator);
             ConstraintSolver.Solve(constraints);
 
-            var bindingTypes = TypePostProcessing.Process(annotations, scopes, symbols);
+            var bindingTypes = TypePostProcessing.Process(group, annotations, symbols);
         
-            // Merge solved types with types.
+            // Merge solved types with processed types.
             // Overrides previous annotations.
             foreach (var (k, v) in bindingTypes) types[k] = v;
         }
