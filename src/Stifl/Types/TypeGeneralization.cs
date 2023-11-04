@@ -9,7 +9,7 @@ namespace Stifl.Types;
 /// <param name="ForallTypes">The type parameters for the type.</param>
 /// <param name="Containing">The type generalized over.</param>
 public sealed record TypeGeneralization(
-    IReadOnlyCollection<TypeParameter> ForallTypes,
+    IReadOnlySet<TypeParameter> ForallTypes,
     IType Containing) : IType
 {
     public IType Purify() => new TypeGeneralization(
@@ -45,7 +45,7 @@ internal sealed class GeneralizationBuilder(
     /// <summary>
     /// The type parameters for the type.
     /// </summary>
-    public List<TypeParameter> ForallTypes { get; } = forallTypes?.ToList() ?? [];
+    public HashSet<TypeParameter> ForallTypes { get; } = forallTypes?.ToHashSet() ?? [];
 
     /// <summary>
     /// The type generalized over.
