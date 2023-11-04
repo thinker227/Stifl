@@ -13,15 +13,15 @@ var unit = Parse.Unit.ParseOrThrow(source);
 var (scopes, symbols) = unit.ResolveScopes();
 var types = TypeResolve.ResolveTypes(unit, scopes, symbols);
 
-foreach (var decl in unit.Decls)
+var bindings = unit.Decls.OfType<Ast.Decl.Binding>();
+var maxNameWidth = bindings.Select(x => x.Name.Length).Max();
+var bindingTypes = bindings
+    .Select(b => (b, types[b].ToString()));
+
+foreach (var (binding, str) in bindingTypes)
 {
-    switch (decl)
-    {
-    case Ast.Decl.Binding binding:
-        var type = types[binding];
-        Console.WriteLine($"{binding.Name}: {type}");
-        break;
-    }
+    var name = $"{binding.Name}:".PadRight(maxNameWidth + 1);
+    Console.WriteLine($"{name} {str}");
 }
 
 return 0;
