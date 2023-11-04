@@ -19,6 +19,9 @@ public sealed record TypeGeneralization(
     // Instantiation should completely remove the generalization.
     public IType Instantiate(Func<TypeParameter, TypeVariable> var) => Containing.Instantiate(var);
 
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
+        new TypeGeneralization(ForallTypes, Containing.ReplaceVars(replace));
+
     public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 
     public override string ToString()
@@ -34,12 +37,15 @@ public sealed record TypeGeneralization(
 /// A mutable builder for a <see cref="TypeGeneralization"/>.
 /// </summary>
 /// <param name="Containing">The type generalized over.</param>
-internal sealed class GeneralizationBuilder(IType containing) : IType
+internal sealed class GeneralizationBuilder(
+    IType containing,
+    IEnumerable<TypeParameter>? forallTypes = null)
+    : IType
 {
     /// <summary>
     /// The type parameters for the type.
     /// </summary>
-    public List<TypeParameter> ForallTypes { get; } = [];
+    public List<TypeParameter> ForallTypes { get; } = forallTypes?.ToList() ?? [];
 
     /// <summary>
     /// The type generalized over.
@@ -52,6 +58,9 @@ internal sealed class GeneralizationBuilder(IType containing) : IType
     IType IType.Instantiate(Func<TypeParameter, TypeVariable> var) =>
         throw new InvalidOperationException(
             $"Unexpected type generalization builder {this} left over during instantiation.");
+
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
+        new GeneralizationBuilder(Containing.ReplaceVars(replace));
 
     public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 

@@ -13,6 +13,9 @@ public sealed record FuncType(IType Parameter, IType Return) : IType
         Parameter.Instantiate(var),
         Return.Instantiate(var));
 
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
+        new FuncType(Parameter.ReplaceVars(replace), Return.ReplaceVars(replace));
+
     public IEnumerable<IType> Children() => [Parameter, Return];
 
     public override string ToString() =>

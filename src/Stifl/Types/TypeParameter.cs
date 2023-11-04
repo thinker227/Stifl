@@ -12,6 +12,8 @@ public sealed class TypeParameter(string name) : IType, ISymbol
     
     public IType Instantiate(Func<TypeParameter, TypeVariable> var) => var(this);
 
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
+
     public IEnumerable<IType> Children() => [];
 
     public override string ToString() => $"'{name}";

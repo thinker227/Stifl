@@ -39,7 +39,7 @@ file sealed class Solver
     {
         static bool Occurs(IType occurs, IType within)
         {
-            var contained = within.ContainedTypes();
+            var contained = within.Children();
 
             if (contained.Contains(occurs)) throw new InvalidOperationException(
                 $"Cannot construct infinite type {occurs} ~ {within}.");

@@ -40,6 +40,12 @@ public sealed class TypeVariable(int Index) : IType
 
     public IType Purify() => substitution?.Purify() ?? this;
 
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
+        (substitution is not null
+                ? substitution
+                : replace(this))
+            .ReplaceVars(replace);
+
     public IEnumerable<IType> Children() =>
         substitution is not null
             ? [substitution]

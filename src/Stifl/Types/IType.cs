@@ -19,4 +19,10 @@ public interface IType : INode<IType>
     /// </summary>
     /// <param name="var">A function to generate new type variables from type parameters.</param>
     IType Instantiate(Func<TypeParameter, TypeVariable> var);
+
+    /// <summary>
+    /// Replaces unsolved type variables with another type.
+    /// </summary>
+    /// <param name="replace">A function to replace type variables with a new type.</param>
+    IType ReplaceVars(Func<TypeVariable, IType> replace);
 }

@@ -30,6 +30,8 @@ public sealed record WellKnownType(WellKnownTypeKind Kind) : IType
 
     public IType Instantiate(Func<TypeParameter, TypeVariable> var) => this;
 
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
+
     public IEnumerable<IType> Children() => [];
 
     public override string ToString() => Kind switch
