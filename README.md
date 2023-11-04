@@ -42,10 +42,11 @@ Simple ML-inspired purely functional language with [Hindley Milner](https://en.w
   - [x] AST
   - [ ] Error recovery
 - [x] Symbol binding
-- [ ] Type checking
+- [x] Type checking
   - [x] Type annotation
   - [x] Constraint generation
   - [x] Constraint solver
+- [ ] Error reporting
 - [ ] Interpreter
 - [ ] Code generation
   - [ ] Bytecode
