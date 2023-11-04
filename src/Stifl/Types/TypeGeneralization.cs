@@ -52,7 +52,7 @@ internal sealed class GeneralizationBuilder(
     /// </summary>
     public IType Containing { get; set; } = containing;
 
-    IType IType.Purify() => new TypeGeneralization(ForallTypes, Containing.Purify());
+    public IType Purify() => new TypeGeneralization(ForallTypes, Containing.Purify());
 
     // A generalization builder should never be present at the time an instantiation would occur.
     IType IType.Instantiate(Func<TypeParameter, TypeVariable> var) =>
