@@ -40,7 +40,7 @@ public sealed class TypeVariable(int Index) : IType
 
     public IType Purify() => substitution?.Purify() ?? this;
 
-    public IEnumerable<IType> ContainedTypes() =>
+    public IEnumerable<IType> Children() =>
         substitution is not null
             ? [substitution]
             : [];

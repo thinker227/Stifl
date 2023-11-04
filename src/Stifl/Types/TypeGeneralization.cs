@@ -19,7 +19,7 @@ public sealed record TypeGeneralization(
     // Instantiation should completely remove the generalization.
     public IType Instantiate(Func<TypeParameter, TypeVariable> var) => Containing.Instantiate(var);
 
-    public IEnumerable<IType> ContainedTypes() => [..ForallTypes, Containing];
+    public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 
     public override string ToString()
     {
@@ -53,7 +53,7 @@ internal sealed class GeneralizationBuilder(IType containing) : IType
         throw new InvalidOperationException(
             $"Unexpected type generalization builder {this} left over during instantiation.");
 
-    public IEnumerable<IType> ContainedTypes() => [..ForallTypes, Containing];
+    public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 
     public override string ToString()
     {

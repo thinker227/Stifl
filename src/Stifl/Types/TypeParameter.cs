@@ -12,7 +12,7 @@ public sealed class TypeParameter(string name) : IType, ISymbol
     
     public IType Instantiate(Func<TypeParameter, TypeVariable> var) => var(this);
 
-    public IEnumerable<IType> ContainedTypes() => [];
+    public IEnumerable<IType> Children() => [];
 
     public override string ToString() => $"'{name}";
 

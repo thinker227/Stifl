@@ -2,7 +2,7 @@ namespace Stifl;
 
 #pragma warning disable IDE0001
 
-public abstract record Ast
+public abstract partial record Ast
 {
     public sealed record Unit(ImmutableArray<Decl> Decls) : Ast;
 

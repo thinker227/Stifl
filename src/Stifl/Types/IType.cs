@@ -3,7 +3,7 @@ namespace Stifl.Types;
 /// <summary>
 /// A semantic representation of a type.
 /// </summary>
-public interface IType
+public interface IType : INode<IType>
 {
     /// <summary>
     /// Tries to remove all type variables from the type.
@@ -19,9 +19,4 @@ public interface IType
     /// </summary>
     /// <param name="var">A function to generate new type variables from type parameters.</param>
     IType Instantiate(Func<TypeParameter, TypeVariable> var);
-
-    /// <summary>
-    /// Gets the types contained within the type.
-    /// </summary>
-    IEnumerable<IType> ContainedTypes();
 }

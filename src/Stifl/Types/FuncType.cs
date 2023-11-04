@@ -13,7 +13,7 @@ public sealed record FuncType(IType Parameter, IType Return) : IType
         Parameter.Instantiate(var),
         Return.Instantiate(var));
 
-    public IEnumerable<IType> ContainedTypes() => [Parameter, Return];
+    public IEnumerable<IType> Children() => [Parameter, Return];
 
     public override string ToString() =>
         Parameter is FuncType f
