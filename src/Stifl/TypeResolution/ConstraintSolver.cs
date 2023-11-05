@@ -82,6 +82,15 @@ file sealed class Solver
             Unify(fa.Return, fb.Return);
             break;
 
+        case (TupleType ta, TupleType tb):
+            if (ta.Arity != tb.Arity) throw new InvalidOperationException(
+                    $"Cannot unify {a} and {b} because they have different arity.");
+
+            foreach (var (v, w) in ta.Types.Zip(tb.Types))
+                Unify(v, w);
+            
+            break;
+
         default:
             if (!a.Equals(b))
                 throw new InvalidOperationException($"Cannot unify {a} and {b}.");

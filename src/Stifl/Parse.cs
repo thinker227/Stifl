@@ -39,6 +39,37 @@ public static class Parse
         Try(String(str).Before(Whitespaces));
 
     /// <summary>
+    /// Parses a separated list of values.
+    /// </summary>
+    /// <param name="parse">The parser for the values.</param>
+    /// <param name="separator">The parser for the separators.</param>
+    private static Parser<char, ImmutableArray<T>> Separated<T, TSep>(
+        Parser<char, T> parse,
+        Parser<char, TSep> separator)
+    {
+        var items =
+            from first in parse
+            from next in separator.Then(parse).Many()
+            select ImmutableArray.Create(first).AddRange(next);
+
+        var none = FromResult(ImmutableArray<T>.Empty);
+
+        return items.Or(none);
+    }
+
+    /// <summary>
+    /// Encloses a parser by two other parsers.
+    /// </summary>
+    /// <param name="parser">The parser to enclose.</param>
+    /// <param name="start">The starting parser.</param>
+    /// <param name="end">The ending parser.</param>
+    private static Parser<char, T> Enclosed<T, TStart, TEnd>(
+        this Parser<char, T> parser,
+        Parser<char, TStart> start,
+        Parser<char, TEnd> end) =>
+        start.Then(parser).Before(end);
+
+    /// <summary>
     /// Parses an identifier.
     /// </summary>
     public static Parser<char, string> Identifier =>
@@ -52,16 +83,23 @@ public static class Parse
             or "true"
             or "false")));
 
-    private static Parser<char, AstType> UnitOrParensType =>
-        CharW('(').Then(OneOf(
-            CharW(')').ThenReturn<AstType>(new AstType.Unit()),
-            RecType.Before(CharW(')'))));
+    /// <summary>
+    /// Parses a unit, parenthesized, or tuple type.
+    /// </summary>
+    private static Parser<char, AstType> UnitOrParensOrTupleType =>
+        Separated(RecType, CharW(',')).Map(xs => xs switch
+        {
+            [] => new AstType.Unit(),
+            [var x] => x,
+            _ => new AstType.Tuple(xs)
+        })
+        .Enclosed(CharW('('), CharW(')'));
 
     /// <summary>
     /// Parses types other than function types.
     /// </summary>
     private static Parser<char, AstType> TypeCore => OneOf(
-        UnitOrParensType,
+        UnitOrParensOrTupleType,
         StringW("Int").ThenReturn<AstType>(new AstType.Int()),
         StringW("Bool").ThenReturn<AstType>(new AstType.Bool()),
         CharW('\'').Then(Identifier.Whitespace().Select<AstType>(ident => new AstType.Var(ident))));
@@ -89,10 +127,17 @@ public static class Parse
     private static Parser<char, AstType> Annotation =>
         CharW(':').Then(Type);
 
-    private static Parser<char, Expr> UnitOrParensExpr =>
-        CharW('(').Then(OneOf(
-            CharW(')').ThenReturn<Expr>(new Expr.Unit()),
-            RecExpr.Before(CharW(')'))));
+    /// <summary>
+    /// Parses a unit, parenthesized, or tuple type.
+    /// </summary>
+    private static Parser<char, Expr> UnitOrParensOrTupleExpr =>
+        Separated(RecExpr, CharW(',')).Map(xs => xs switch
+        {
+            [] => new Expr.Unit(),
+            [var x] => x,
+            _ => new Expr.Tuple(xs)
+        })
+        .Enclosed(CharW('('), CharW(')'));
 
     /// <summary>
     /// Parses a <see cref="Expr.BoolLiteral"/>.
@@ -135,7 +180,7 @@ public static class Parse
     /// Parses expressions other than call and annotation expressions.
     /// </summary>
     private static Parser<char, Expr> ExprCore => OneOf(
-        UnitOrParensExpr,
+        UnitOrParensOrTupleExpr,
         CharW('?').ThenReturn<Expr>(new Expr.UndefinedLiteral()),
         BoolLiteralExpr,
         Int(10).Whitespace().Select<Expr>(x => new Expr.IntLiteral(x)),

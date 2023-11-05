@@ -98,6 +98,7 @@ file sealed class ConstraintGenerationVisitor(
         AstType.Func func => new FuncType(
             ToType(func.Parameter),
             ToType(func.Return)),
+        AstType.Tuple tuple => new TupleType(tuple.Types.Select(ToType).ToList()),
         AstType.Var var => scopes[var].LookupTypeParameter(var.Name)
             ?? throw new InvalidOperationException(
                 $"Type variable node '{var.Name} does not have an associated symbol."),
@@ -257,6 +258,21 @@ file sealed class ConstraintGenerationVisitor(
 
         VisitNode(node.Value);
         VisitNode(node.Expression);
+
+        return Default;
+    }
+
+    public override Unit VisitTupleExpr(Ast.Expr.Tuple node)
+    {
+        var types = node.Values
+            .Select(GetType)
+            .ToImmutableArray();
+
+        var type = new TupleType(types);
+
+        Eq(node, type);
+
+        VisitMany(node.Values).Enumerate();
 
         return Default;
     }
