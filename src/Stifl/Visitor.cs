@@ -108,6 +108,7 @@ public abstract class AstVisitor<T>
         Expr.Call x => VisitCallExpr(x),
         Expr.Let x => VisitLetExpr(x),
         Expr.Tuple x => VisitTupleExpr(x),
+        Expr.List x => VisitListExpr(x),
         Expr.Annotated x => VisitAnnotatedExpr(x),
         _ => throw new UnreachableException(),
     };
@@ -158,6 +159,12 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    public virtual T VisitListExpr(Expr.List node)
+    {
+        VisitMany(node.Values).Enumerate();
+        return Default;
+    }
+
     public virtual T VisitAnnotatedExpr(Expr.Annotated node)
     {
         VisitNode(node.Expression);
@@ -172,6 +179,7 @@ public abstract class AstVisitor<T>
         AstType.Bool x => VisitBoolType(x),
         AstType.Func x => VisitFuncType(x),
         AstType.Tuple x => VisitTupleType(x),
+        AstType.List x => VisitListType(x),
         AstType.Var x => VisitVarType(x),
         _ => throw new UnreachableException(),
     };
@@ -192,6 +200,12 @@ public abstract class AstVisitor<T>
     public virtual T VisitTupleType(AstType.Tuple node)
     {
         VisitMany(node.Types).Enumerate();
+        return Default;
+    }
+
+    public virtual T VisitListType(AstType.List node)
+    {
+        VisitNode(node.Containing);
         return Default;
     }
 

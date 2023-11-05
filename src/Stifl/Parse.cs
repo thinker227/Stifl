@@ -84,6 +84,13 @@ public static class Parse
             or "false")));
 
     /// <summary>
+    /// Parses a <see cref="AstType.List"/>.
+    /// </summary>
+    private static Parser<char, AstType> ListType =>
+        RecType.Map<AstType>(t => new AstType.List(t))
+            .Enclosed(CharW('['), CharW(']'));
+
+    /// <summary>
     /// Parses a unit, parenthesized, or tuple type.
     /// </summary>
     private static Parser<char, AstType> UnitOrParensOrTupleType =>
@@ -102,6 +109,7 @@ public static class Parse
         UnitOrParensOrTupleType,
         StringW("Int").ThenReturn<AstType>(new AstType.Int()),
         StringW("Bool").ThenReturn<AstType>(new AstType.Bool()),
+        ListType,
         CharW('\'').Then(Identifier.Whitespace().Select<AstType>(ident => new AstType.Var(ident))));
 
     /// <summary>
@@ -126,6 +134,14 @@ public static class Parse
     /// </summary>
     private static Parser<char, AstType> Annotation =>
         CharW(':').Then(Type);
+
+    /// <summary>
+    /// Parses a <see cref="Expr.List"/>.
+    /// </summary>
+    private static Parser<char, Expr> ListExpr =>
+        Separated(RecExpr, CharW(','))
+            .Map<Expr>(xs => new Expr.List(xs))
+            .Enclosed(CharW('['), CharW(']'));
 
     /// <summary>
     /// Parses a unit, parenthesized, or tuple type.
@@ -187,6 +203,7 @@ public static class Parse
         FuncExpr,
         IfExpr,
         LetExpr,
+        ListExpr,
         Identifier.Whitespace().Select<Expr>(ident => new Expr.Identifier(ident)));
 
     /// <summary>
