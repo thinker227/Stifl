@@ -15,7 +15,7 @@ public static class Expressions
     /// Parses a <see cref="Expr.List"/>.
     /// </summary>
     private static Parser<char, Expr> ListExpr { get; } =
-        Separated(RecExpr, CharW(','))
+        Separated(RecExpr!, CharW(','))
             .Map<Expr>(xs => new Expr.List(xs))
             .Enclosed(CharW('['), CharW(']'));
 
@@ -23,7 +23,7 @@ public static class Expressions
     /// Parses a unit, parenthesized, or tuple type.
     /// </summary>
     private static Parser<char, Expr> UnitOrParensOrTupleExpr { get; } =
-        Separated(RecExpr, CharW(',')).Map(xs => xs switch
+        Separated(RecExpr!, CharW(',')).Map(xs => xs switch
         {
             [] => new Expr.Unit(),
             [var x] => x,
@@ -46,16 +46,16 @@ public static class Expressions
             .Then(Identifier.Whitespace())
         from annotation in Annotation.Optional()
         from body in StringW("=>")
-            .Then(RecExpr)
+            .Then(RecExpr!)
         select (Expr)new Expr.Func(parameter, annotation.Nullable(), body);
 
     /// <summary>
     /// Parses a <see cref="Expr.If"/>.
     /// </summary>
     private static Parser<char, Expr> IfExpr { get; } =
-        from condition in StringW("if").Then(RecExpr)
-        from ifTrue in StringW("then").Then(RecExpr)
-        from ifFalse in StringW("else").Then(RecExpr)
+        from condition in StringW("if").Then(RecExpr!)
+        from ifTrue in StringW("then").Then(RecExpr!)
+        from ifFalse in StringW("else").Then(RecExpr!)
         select (Expr)new Expr.If(condition, ifTrue, ifFalse);
 
     /// <summary>
@@ -64,8 +64,8 @@ public static class Expressions
     private static Parser<char, Expr> LetExpr { get; } =
         from name in StringW("let").Then(Identifier.Whitespace())
         from annotation in Annotation.Optional()
-        from value in CharW('=').Then(RecExpr)
-        from expression in StringW("in").Then(RecExpr)
+        from value in CharW('=').Then(RecExpr!)
+        from expression in StringW("in").Then(RecExpr!)
         select (Expr)new Expr.Let(name, annotation.Nullable(), value, expression);
 
     /// <summary>
@@ -105,7 +105,7 @@ public static class Expressions
             an => new Expr.Annotated(expr, an),
             () => expr);
 
-    private static Parser<char, Expr> RecExpr { get; } = Rec(() => Expr);
+    private static Parser<char, Expr> RecExpr { get; } = Rec(() => Expr!);
 
     /// <summary>
     /// Parses an <see cref="Ast.Expr"/>.
