@@ -9,6 +9,16 @@ namespace Stifl;
 internal static partial class Utility
 {
     /// <summary>
+    /// Turns a <see cref="Pidgin.Maybe{T}"/> into a nullable value.
+    /// </summary>
+    /// <typeparam name="T">The type inside the maybe.</typeparam>
+    /// <param name="maybe">The source maybe.</param>
+    public static T? Nullable<T>(this Pidgin.Maybe<T> maybe) where T : class =>
+        maybe.HasValue
+            ? maybe.Value
+            : null;
+
+    /// <summary>
     /// Enumerates an enumerable and discards the result.
     /// This is intended for impure enumerables.
     /// </summary>
