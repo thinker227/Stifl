@@ -99,6 +99,7 @@ file sealed class ConstraintGenerationVisitor(
             ToType(func.Parameter),
             ToType(func.Return)),
         AstType.Tuple tuple => new TupleType(tuple.Types.Select(ToType).ToList()),
+        AstType.List list => new ListType(ToType(list.Containing)),
         AstType.Var var => scopes[var].LookupTypeParameter(var.Name)
             ?? throw new InvalidOperationException(
                 $"Type variable node '{var.Name} does not have an associated symbol."),
@@ -269,6 +270,25 @@ file sealed class ConstraintGenerationVisitor(
             .ToImmutableArray();
 
         var type = new TupleType(types);
+
+        Eq(node, type);
+
+        VisitMany(node.Values).Enumerate();
+
+        return Default;
+    }
+
+    public override Unit VisitListExpr(Ast.Expr.List node)
+    {
+        var containing = variableInator.Next();
+
+        foreach (var value in node.Values)
+        {
+            var t = GetType(value);
+            Eq(t, containing);
+        }
+
+        var type = new ListType(containing);
 
         Eq(node, type);
 

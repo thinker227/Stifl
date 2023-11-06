@@ -91,6 +91,10 @@ file sealed class Solver
             
             break;
 
+        case (ListType la, ListType lb):
+            Unify(la.Containing, lb.Containing);
+            break;
+
         default:
             if (!a.Equals(b))
                 throw new InvalidOperationException($"Cannot unify {a} and {b}.");

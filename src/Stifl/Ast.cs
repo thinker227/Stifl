@@ -33,6 +33,8 @@ public abstract partial record Ast
 
         public sealed record Tuple(ImmutableArray<Expr> Values) : Expr;
 
+        public sealed record List(ImmutableArray<Expr> Values) : Expr;
+
         public sealed record Annotated(Expr Expression, Type Annotation) : Expr;
     }
 
@@ -47,6 +49,8 @@ public abstract partial record Ast
         public sealed record Func(Type Parameter, Type Return) : Type;
 
         public sealed record Tuple(ImmutableArray<Type> Types) : Type;
+
+        public sealed record List(Type Containing) : Type;
 
         public sealed record Var(string Name) : Type;
     }

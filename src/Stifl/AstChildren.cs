@@ -23,6 +23,7 @@ public abstract partial record Ast : INode<Ast>
         Expr.Call x => [x.Function, x.Argument],
         Expr.Let x => [..EmptyIfNull(x.AnnotatedType), x.Value, x.Expression],
         Expr.Tuple x => [..x.Values],
+        Expr.List x => [..x.Values],
         Expr.Annotated x => [x.Expression, x.Annotation],
 
         AstType.Unit => [],
@@ -30,6 +31,7 @@ public abstract partial record Ast : INode<Ast>
         AstType.Bool => [],
         AstType.Func x => [x.Parameter, x.Return],
         AstType.Tuple x => [..x.Types],
+        AstType.List x => [x.Containing],
         AstType.Var => [],
         
         _ => throw new UnreachableException($"Cannot get children of node type {GetType()}."),
