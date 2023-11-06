@@ -15,7 +15,7 @@ public static class Declarations
     /// <summary>
     /// Parses a <see cref="Decl.Binding"/>.
     /// </summary>
-    public static Parser<char, Decl.Binding> Binding { get; } =
+    public static Parser<char, Decl.Binding> Binding =>
         from name in Identifier.Whitespace()
         from annotation in Annotation.Optional()
             .Before(CharW('='))
@@ -26,13 +26,13 @@ public static class Declarations
     /// <summary>
     /// Parses a <see cref="Ast.Decl"/>.
     /// </summary>
-    public static Parser<char, Decl> Decl { get; } = Parser.OneOf(
+    public static Parser<char, Decl> Decl => Parser.OneOf(
         Binding.Cast<Decl>());
 
     /// <summary>
     /// Parses a <see cref="Ast.Unit"/>.
     /// </summary>
-    public static Parser<char, Unit> Unit { get; } =
+    public static Parser<char, Unit> Unit =>
         Decl
             .Many()
             .Select(decls => new Unit(decls.ToImmutableArray()));

@@ -77,6 +77,6 @@ public static class General
     /// <summary>
     /// Parses a type annotation.
     /// </summary>
-    public static Parser<char, AstType> Annotation { get; } =
+    public static Parser<char, AstType> Annotation =>
         CharW(':').Then(Types.Type);
 }

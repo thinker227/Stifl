@@ -14,7 +14,7 @@ public static class Expressions
     /// <summary>
     /// Parses a <see cref="Expr.List"/>.
     /// </summary>
-    private static Parser<char, Expr> ListExpr { get; } =
+    private static Parser<char, Expr> ListExpr =>
         Separated(RecExpr!, CharW(','))
             .Map<Expr>(xs => new Expr.List(xs))
             .Enclosed(CharW('['), CharW(']'));
@@ -22,7 +22,7 @@ public static class Expressions
     /// <summary>
     /// Parses a unit, parenthesized, or tuple type.
     /// </summary>
-    private static Parser<char, Expr> UnitOrParensOrTupleExpr { get; } =
+    private static Parser<char, Expr> UnitOrParensOrTupleExpr =>
         Separated(RecExpr!, CharW(',')).Map(xs => xs switch
         {
             [] => new Expr.Unit(),
@@ -41,7 +41,7 @@ public static class Expressions
     /// <summary>
     /// Parses a <see cref="Expr.Func"/>.
     /// </summary>
-    private static Parser<char, Expr> FuncExpr { get; } =
+    private static Parser<char, Expr> FuncExpr =>
         from parameter in StringW("fn")
             .Then(Identifier.Whitespace())
         from annotation in Annotation.Optional()
@@ -52,7 +52,7 @@ public static class Expressions
     /// <summary>
     /// Parses a <see cref="Expr.If"/>.
     /// </summary>
-    private static Parser<char, Expr> IfExpr { get; } =
+    private static Parser<char, Expr> IfExpr =>
         from condition in StringW("if").Then(RecExpr!)
         from ifTrue in StringW("then").Then(RecExpr!)
         from ifFalse in StringW("else").Then(RecExpr!)
@@ -61,7 +61,7 @@ public static class Expressions
     /// <summary>
     /// Parses a <see cref="Expr.Let"/>
     /// </summary>
-    private static Parser<char, Expr> LetExpr { get; } =
+    private static Parser<char, Expr> LetExpr =>
         from name in StringW("let").Then(Identifier.Whitespace())
         from annotation in Annotation.Optional()
         from value in CharW('=').Then(RecExpr!)
@@ -71,7 +71,7 @@ public static class Expressions
     /// <summary>
     /// Parses expressions other than call and annotation expressions.
     /// </summary>
-    private static Parser<char, Expr> ExprCore { get; } = Parser.OneOf(
+    private static Parser<char, Expr> ExprCore => Parser.OneOf(
         UnitOrParensOrTupleExpr,
         CharW('?').ThenReturn<Expr>(new Expr.UndefinedLiteral()),
         BoolLiteralExpr,
@@ -98,17 +98,17 @@ public static class Expressions
     /// <summary>
     /// Parses an expression with an optional type annotation at the end.
     /// </summary>
-    private static Parser<char, Expr> AnnotationExpr { get; } =
+    private static Parser<char, Expr> AnnotationExpr =>
         from expr in CallExpr()
         from annotation in Annotation.Optional()
         select annotation.Match(
             an => new Expr.Annotated(expr, an),
             () => expr);
 
-    private static Parser<char, Expr> RecExpr { get; } = Rec(() => Expr!);
+    private static Parser<char, Expr> RecExpr => Rec(() => Expr!);
 
     /// <summary>
     /// Parses an <see cref="Ast.Expr"/>.
     /// </summary>
-    public static Parser<char, Expr> Expr { get; } = AnnotationExpr;
+    public static Parser<char, Expr> Expr => AnnotationExpr;
 }
