@@ -19,6 +19,8 @@ Simple ML-inspired purely functional language with [Hindley Milner](https://en.w
   - `let x = y in z`
 - Tuples
   - `(a, b, c)`
+- Lists
+  - `[a, b, c]`
 - Undefined
   - `?`
   - Throws an error at runtime.
@@ -28,6 +30,7 @@ Simple ML-inspired purely functional language with [Hindley Milner](https://en.w
   - Booleans
   - Functions (`t1 -> t2`)
   - Tuples (`(t1, t2, t3)`)
+  - Lists (`[t]`)
   - Type variables (`'t`)
   - Unit (`()`)
   - Bottom (`_`)
