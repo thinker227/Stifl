@@ -1,5 +1,6 @@
 ﻿using Pidgin;
 using Stifl;
+using Stifl.Parsing;
 
 if (args is not [var path])
 {
@@ -9,7 +10,7 @@ if (args is not [var path])
 
 var source = File.ReadAllText(path);
 
-var unit = Parse.Unit.ParseOrThrow(source);
+var unit = Declarations.Unit.ParseOrThrow(source);
 var (scopes, symbols) = unit.ResolveScopes();
 var types = TypeResolve.ResolveTypes(unit, scopes, symbols);
 
