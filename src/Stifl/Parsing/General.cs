@@ -63,7 +63,7 @@ public static class General
     /// <summary>
     /// Parses an identifier.
     /// </summary>
-    public static Parser<char, string> Identifier =>
+    public static Parser<char, string> Identifier { get; } =
         Try(Letter.AtLeastOnceString().Where(s => s is not
               ("fn"
             or "let"
@@ -77,6 +77,6 @@ public static class General
     /// <summary>
     /// Parses a type annotation.
     /// </summary>
-    public static Parser<char, AstType> Annotation =>
+    public static Parser<char, AstType> Annotation { get; } =
         CharW(':').Then(Types.Type);
 }
