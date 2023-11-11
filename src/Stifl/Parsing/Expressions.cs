@@ -71,7 +71,7 @@ public static class Expressions
     /// <summary>
     /// Parses expressions other than call and annotation expressions.
     /// </summary>
-    private static Parser<char, Expr> ExprCore => Parser.OneOf(
+    private static Parser<char, Expr> Primary => Parser.OneOf(
         UnitOrParensOrTupleExpr,
         CharW('?').ThenReturn<Expr>(new Expr.UndefinedLiteral()),
         BoolLiteralExpr,
@@ -88,11 +88,11 @@ public static class Expressions
     private static Parser<char, Expr> CallExpr()
     {
         static Parser<char, Expr> Call(Expr acc) =>
-            ExprCore.Optional().Bind(expr => expr.Match(
+            Primary.Optional().Bind(expr => expr.Match(
                 x => Call(new Expr.Call(acc, x)),
                 () => FromResult(acc)));
 
-        return ExprCore.Bind(Call);
+        return Primary.Bind(Call);
     }
 
     /// <summary>
