@@ -16,7 +16,7 @@ public static class Declarations
     /// Parses a <see cref="Decl.Binding"/>.
     /// </summary>
     public static Parser<char, Decl.Binding> Binding =>
-        from name in Identifier.Whitespace()
+        from name in Identifier.BeforeWhitespace()
         from annotation in Annotation.Optional()
             .Before(CharW('='))
         from expr in Expressions.Expr

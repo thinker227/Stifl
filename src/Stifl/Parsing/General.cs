@@ -1,6 +1,7 @@
 using Pidgin;
-using static Pidgin.Parser;
+using Pidgin.Comment;
 using static Pidgin.Parser<char>;
+using static Pidgin.Parser;
 
 namespace Stifl.Parsing;
 
@@ -10,24 +11,30 @@ namespace Stifl.Parsing;
 public static class General
 {
     /// <summary>
+    /// Parses whitespace.
+    /// </summary>
+    public static Parser<char, Unit> Whitespace { get; } =
+        SkipWhitespaces.Then(CommentParser.SkipLineComment(String("//")));
+
+    /// <summary>
     /// Parses whitespace after another parser.
     /// </summary>
-    public static Parser<char, T> Whitespace<T>(this Parser<char, T> parser) =>
-        parser.Before(Whitespaces);
+    public static Parser<char, T> BeforeWhitespace<T>(this Parser<char, T> parser) =>
+        parser.Before(Whitespace);
 
     /// <summary>
     /// Parses a character with optional whitespace after it.
     /// </summary>
     /// <param name="character">The character to parse.</param>
     public static Parser<char, char> CharW(char character) =>
-        Char(character).Whitespace();
+        Char(character).BeforeWhitespace();
 
     /// <summary>
     /// Parses a string with optional whitespace after it.
     /// </summary>
     /// <param name="str">The string to parse.</param>
     public static Parser<char, string> StringW(string str) =>
-        Try(String(str).Whitespace());
+        Try(String(str).BeforeWhitespace());
 
     /// <summary>
     /// Parses a separated list of values.

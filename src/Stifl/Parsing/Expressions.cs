@@ -43,7 +43,7 @@ public static class Expressions
     /// </summary>
     private static Parser<char, Expr> FuncExpr =>
         from parameter in StringW("fn")
-            .Then(Identifier.Whitespace())
+            .Then(Identifier.BeforeWhitespace())
         from annotation in Annotation.Optional()
         from body in StringW("=>")
             .Then(RecExpr)
@@ -62,7 +62,7 @@ public static class Expressions
     /// Parses a <see cref="Expr.Let"/>
     /// </summary>
     private static Parser<char, Expr> LetExpr =>
-        from name in StringW("let").Then(Identifier.Whitespace())
+        from name in StringW("let").Then(Identifier.BeforeWhitespace())
         from annotation in Annotation.Optional()
         from value in CharW('=').Then(RecExpr)
         from expression in StringW("in").Then(RecExpr)
@@ -75,12 +75,12 @@ public static class Expressions
         UnitOrParensOrTupleExpr,
         CharW('?').ThenReturn<Expr>(new Expr.UndefinedLiteral()),
         BoolLiteralExpr,
-        Int(10).Whitespace().Select<Expr>(x => new Expr.IntLiteral(x)),
+        Int(10).BeforeWhitespace().Select<Expr>(x => new Expr.IntLiteral(x)),
         FuncExpr,
         IfExpr,
         LetExpr,
         ListExpr,
-        Identifier.Whitespace().Select<Expr>(ident => new Expr.Identifier(ident)));
+        Identifier.BeforeWhitespace().Select<Expr>(ident => new Expr.Identifier(ident)));
 
     /// <summary>
     /// Recursively parses a left-associative call expression.

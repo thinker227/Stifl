@@ -37,7 +37,7 @@ public static class Types
         StringW("Int").ThenReturn<AstType>(new AstType.Int()),
         StringW("Bool").ThenReturn<AstType>(new AstType.Bool()),
         ListType,
-        CharW('\'').Then(Identifier.Whitespace().Select<AstType>(ident => new AstType.Var(ident))));
+        CharW('\'').Then(Identifier.BeforeWhitespace().Select<AstType>(ident => new AstType.Var(ident))));
 
     /// <summary>
     /// Recursively parses a right-associative function type.
