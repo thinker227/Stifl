@@ -9,6 +9,16 @@ namespace Stifl;
 internal static partial class Utility
 {
     /// <summary>
+    /// Turns a <see cref="Pidgin.Maybe{T}"/> into a nullable value.
+    /// </summary>
+    /// <typeparam name="T">The type inside the maybe.</typeparam>
+    /// <param name="maybe">The source maybe.</param>
+    public static T? Nullable<T>(this Pidgin.Maybe<T> maybe) where T : class =>
+        maybe.HasValue
+            ? maybe.Value
+            : null;
+
+    /// <summary>
     /// Enumerates an enumerable and discards the result.
     /// This is intended for impure enumerables.
     /// </summary>
@@ -38,5 +48,24 @@ internal static partial class Utility
         }
 
         return value;
+    }
+
+    /// <summary>
+    /// Zips each element of a sequence with its next element.
+    /// </summary>
+    /// <typeparam name="T">The type of the values.</typeparam>
+    /// <param name="xs">The source sequence.</param>
+    public static IEnumerable<(T, T)> WithNext<T>(this IEnumerable<T> xs)
+    {
+        var first = true;
+        var prev = default(T);
+
+        foreach (var x in xs)
+        {
+            if (!first) yield return (prev!, x);
+
+            first = false;
+            prev = x;
+        }
     }
 }
