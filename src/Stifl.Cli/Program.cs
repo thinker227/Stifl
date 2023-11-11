@@ -10,7 +10,7 @@ if (args is not [var path])
 
 var source = File.ReadAllText(path);
 
-var unit = Declarations.Unit.ParseOrThrow(source);
+var unit = Declarations.Unit.Full().ParseOrThrow(source);
 var (scopes, symbols) = unit.ResolveScopes();
 var types = TypeResolve.ResolveTypes(unit, scopes, symbols);
 
