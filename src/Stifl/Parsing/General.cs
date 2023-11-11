@@ -13,8 +13,7 @@ public static class General
     /// <summary>
     /// Parses whitespace.
     /// </summary>
-    public static Parser<char, Unit> Whitespace { get; } =
-        SkipWhitespaces.Then(CommentParser.SkipLineComment(String("//")));
+    public static Parser<char, Unit> Whitespace { get; } = new WhitespaceParser();
 
     /// <summary>
     /// Parses whitespace after another parser.
