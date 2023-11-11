@@ -9,7 +9,7 @@ namespace Stifl.Parsing;
 /// <summary>
 /// Methods for parsing expressions.
 /// </summary>
-public static class Expressions
+internal static class Expressions
 {
     /// <summary>
     /// Parses a <see cref="Expr.List"/>.

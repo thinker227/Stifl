@@ -7,7 +7,7 @@ namespace Stifl.Parsing;
 /// <summary>
 /// General methods for parsing.
 /// </summary>
-public static class General
+internal static class General
 {
     /// <summary>
     /// Parses whitespace.
@@ -19,13 +19,6 @@ public static class General
     /// </summary>
     public static Parser<char, T> BeforeWhitespace<T>(this Parser<char, T> parser) =>
         parser.Before(Whitespace);
-
-    /// <summary>
-    /// Parses a full input stream with leading whitespace and a trailing end of input.
-    /// </summary>
-    /// <param name="parse">The inner parser to run.</param>
-    public static Parser<char, T> Full<T>(this Parser<char, T> parse) =>
-        Whitespace.Then(parse).Before(End);
 
     /// <summary>
     /// Parses a character with optional whitespace after it.

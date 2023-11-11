@@ -10,7 +10,7 @@ namespace Stifl.Parsing;
 /// <summary>
 /// Methods for parsing declarations.
 /// </summary>
-public static class Declarations
+internal static class Declarations
 {
     /// <summary>
     /// Parses a <see cref="Decl.Binding"/>.

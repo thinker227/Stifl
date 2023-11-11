@@ -8,7 +8,7 @@ namespace Stifl.Parsing;
 /// <summary>
 /// Methods for parsing types.
 /// </summary>
-public static class Types
+internal static class Types
 {
     /// <summary>
     /// Parses a <see cref="AstType.List"/>.
