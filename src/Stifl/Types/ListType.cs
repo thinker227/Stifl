@@ -1,6 +1,4 @@
-using Stifl.Types;
-
-namespace Stifl;
+namespace Stifl.Types;
 
 /// <summary>
 /// A list type.

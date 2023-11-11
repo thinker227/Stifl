@@ -1,7 +1,8 @@
 using Pidgin;
 using static Pidgin.Parser<char>;
+using Stifl.Parsing;
 
-namespace Stifl.Parsing;
+namespace Stifl;
 
 /// <summary>
 /// Methods for parsing.
@@ -31,5 +32,5 @@ public static class Parse
     public static Parser<char, Ast.Expr> Expr => Expressions.Expr;
     
     /// <inheritdoc cref="Types.Type"/>
-    public static Parser<char, AstType> Type => Types.Type;
+    public static Parser<char, AstType> Type => Parsing.Types.Type;
 }
