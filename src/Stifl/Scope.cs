@@ -80,10 +80,10 @@ public sealed class Scope(
     /// <param name="name">The name of the type parameter.
     /// May include the leading <c>'</c> or not.</param>
     /// <returns></returns>
-    public TypeParameter? LookupTypeParameter(string name)
+    public DeclaredTypeParameter? LookupTypeParameter(string name)
     {
         if (!name.StartsWith('\'')) name = $"'{name}";
-        return Lookup<TypeParameter>(name);
+        return Lookup<DeclaredTypeParameter>(name);
     }
 }
 
@@ -225,8 +225,8 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
         // Type parameter aren't declared in the same way as other symbols.
         // If a type parameter is referenced which isn't declared,
         // it should automatically be declared.
-        if (Current.Scope.LookupTypeParameter(node.Name) is not TypeParameter symbol)
-            Register(new TypeParameter(node.Name), node);
+        if (Current.Scope.LookupTypeParameter(node.Name) is not DeclaredTypeParameter symbol)
+            Register(new DeclaredTypeParameter(node.Name), node);
         else symbols[node] = symbol;
         
         return Default;

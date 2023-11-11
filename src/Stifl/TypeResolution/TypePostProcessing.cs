@@ -54,7 +54,7 @@ file sealed class BindingProcessor(
         .ReplaceVars(var =>
             parameters.GetOrAdd(var, () =>
             {
-                var param = new TypeParameter(var.ToString());
+                var param = new TypeParameter();
                 generalization.ForallTypes.Add(param);
                 return param;
             }));
