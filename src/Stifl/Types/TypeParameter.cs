@@ -37,6 +37,11 @@ public sealed class TypeParameter(string name) : ITypeParameter, ISymbol
 {
     public string Name => $"'{name}";
 
+    /// <summary>
+    /// The name of the type parameter without the leading <c>'</c>.
+    /// </summary>
+    public string OrdinalName => name;
+
     public IType Purify() => this;
     
     public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
