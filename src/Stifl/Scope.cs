@@ -80,10 +80,10 @@ public sealed class Scope(
     /// <param name="name">The name of the type parameter.
     /// May include the leading <c>'</c> or not.</param>
     /// <returns></returns>
-    public DeclaredTypeParameter? LookupTypeParameter(string name)
+    public TypeParameter? LookupTypeParameter(string name)
     {
         if (!name.StartsWith('\'')) name = $"'{name}";
-        return Lookup<DeclaredTypeParameter>(name);
+        return Lookup<TypeParameter>(name);
     }
 }
 
@@ -159,11 +159,11 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
     {
         // If the symbol being registered is a type parameter
         // then it should be registered in the parent binding's scope.
-        var scope = symbol is TypeParameter
+        var scope = symbol is ITypeParameter
             ? FindParentFunctionOrGlobalScope(Current)
             : Current;
 
-        if (scope.Symbols.ContainsKey(symbol.Name) && symbol is not TypeParameter)
+        if (scope.Symbols.ContainsKey(symbol.Name) && symbol is not ITypeParameter)
             throw new InvalidOperationException($"Symbol {symbol.Name} declared multiple times.");
             
         scope.Symbols[symbol.Name] = symbol;
@@ -225,8 +225,8 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
         // Type parameter aren't declared in the same way as other symbols.
         // If a type parameter is referenced which isn't declared,
         // it should automatically be declared.
-        if (Current.Scope.LookupTypeParameter(node.Name) is not DeclaredTypeParameter symbol)
-            Register(new DeclaredTypeParameter(node.Name), node);
+        if (Current.Scope.LookupTypeParameter(node.Name) is not TypeParameter symbol)
+            Register(new TypeParameter(node.Name), node);
         else symbols[node] = symbol;
         
         return Default;

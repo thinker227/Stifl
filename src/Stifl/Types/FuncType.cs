@@ -9,7 +9,7 @@ public sealed record FuncType(IType Parameter, IType Return) : IType
 {
     public IType Purify() => new FuncType(Parameter.Purify(), Return.Purify());
 
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) => new FuncType(
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => new FuncType(
         Parameter.Instantiate(var),
         Return.Instantiate(var));
 

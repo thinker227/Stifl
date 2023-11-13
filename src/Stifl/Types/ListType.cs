@@ -8,7 +8,7 @@ public sealed record ListType(IType Containing) : IType
 {
     public IType Purify() => new ListType(Containing.Purify());
 
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) =>
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) =>
         new ListType(Containing.Instantiate(var));
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>

@@ -1,26 +1,49 @@
 namespace Stifl.Types;
 
 /// <summary>
-/// A synthesized type parameter.
+/// A type parameter in a <see cref="TypeGeneralization"/>.
 /// </summary>
-public class TypeParameter : IType
+public interface ITypeParameter : IType;
+
+/// <summary>
+/// An type parameter which is created during type inference.
+/// </summary>
+public sealed class InferredTypeParameter : ITypeParameter
 {
+#if DEBUG
+    private static int currentIndex = 0;
+
+    private readonly int index = currentIndex++;
+#endif
+
     public IType Purify() => this;
     
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) => var(this);
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
 
     public IEnumerable<IType> Children() => [];
+
+#if DEBUG
+    public override string ToString() => $"'T{index}";
+#endif
 }
 
 /// <summary>
 /// An explicitly declared type parameter.
 /// </summary>
 /// <param name="name">The name of the type parameter.</param>
-public sealed class DeclaredTypeParameter(string name) : TypeParameter, ISymbol
+public sealed class TypeParameter(string name) : ITypeParameter, ISymbol
 {
     public string Name => $"'{name}";
+
+    public IType Purify() => this;
+    
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
+
+    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
+
+    public IEnumerable<IType> Children() => [];
 
     public override string ToString() => Name;
 }

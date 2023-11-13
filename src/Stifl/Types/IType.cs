@@ -18,7 +18,7 @@ public interface IType : INode<IType>
     /// Removes generalizations and replaces all type parameters in the type with new type variables.
     /// </summary>
     /// <param name="var">A function to generate new type variables from type parameters.</param>
-    IType Instantiate(Func<TypeParameter, TypeVariable> var);
+    IType Instantiate(Func<ITypeParameter, TypeVariable> var);
 
     /// <summary>
     /// Replaces unsolved type variables with another type.

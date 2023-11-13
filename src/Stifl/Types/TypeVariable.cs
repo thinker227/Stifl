@@ -40,7 +40,7 @@ public sealed class TypeVariable(int Index) : IType
 
     public IType Purify() => substitution?.Purify() ?? this;
 
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) => substitution?.Instantiate(var) ?? this;
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => substitution?.Instantiate(var) ?? this;
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         (substitution is not null

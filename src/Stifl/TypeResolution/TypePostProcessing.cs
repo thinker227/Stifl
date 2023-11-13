@@ -47,14 +47,14 @@ file sealed class BindingProcessor(
     GeneralizationBuilder generalization,
     AnnotationSet annotations)
 {
-    private readonly Dictionary<TypeVariable, TypeParameter> parameters = [];
+    private readonly Dictionary<TypeVariable, InferredTypeParameter> parameters = [];
 
     public IType Process(AstOrSymbol x) => annotations[x]
         .Purify()
         .ReplaceVars(var =>
             parameters.GetOrAdd(var, () =>
             {
-                var param = new TypeParameter();
+                var param = new InferredTypeParameter();
                 generalization.ForallTypes.Add(param);
                 return param;
             }));

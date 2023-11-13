@@ -9,7 +9,7 @@ namespace Stifl.Types;
 /// <param name="ForallTypes">The type parameters for the type.</param>
 /// <param name="Containing">The type generalized over.</param>
 public sealed record TypeGeneralization(
-    IReadOnlySet<TypeParameter> ForallTypes,
+    IReadOnlySet<ITypeParameter> ForallTypes,
     IType Containing) : IType
 {
     public IType Purify() => new TypeGeneralization(
@@ -17,7 +17,7 @@ public sealed record TypeGeneralization(
         Containing.Purify());
     
     // Instantiation should completely remove the generalization.
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) => Containing.Instantiate(var);
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => Containing.Instantiate(var);
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new TypeGeneralization(ForallTypes, Containing.ReplaceVars(replace));
@@ -39,13 +39,13 @@ public sealed record TypeGeneralization(
 /// <param name="Containing">The type generalized over.</param>
 internal sealed class GeneralizationBuilder(
     IType containing,
-    IEnumerable<TypeParameter>? forallTypes = null)
+    IEnumerable<ITypeParameter>? forallTypes = null)
     : IType
 {
     /// <summary>
     /// The type parameters for the type.
     /// </summary>
-    public HashSet<TypeParameter> ForallTypes { get; } = forallTypes?.ToHashSet() ?? [];
+    public HashSet<ITypeParameter> ForallTypes { get; } = forallTypes?.ToHashSet() ?? [];
 
     /// <summary>
     /// The type generalized over.
@@ -55,7 +55,7 @@ internal sealed class GeneralizationBuilder(
     public IType Purify() => new TypeGeneralization(ForallTypes, Containing.Purify());
 
     // A generalization builder should never be present at the time an instantiation would occur.
-    IType IType.Instantiate(Func<TypeParameter, TypeVariable> var) =>
+    IType IType.Instantiate(Func<ITypeParameter, TypeVariable> var) =>
         throw new InvalidOperationException(
             $"Unexpected type generalization builder {this} left over during instantiation.");
 

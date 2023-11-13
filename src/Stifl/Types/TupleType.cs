@@ -12,7 +12,7 @@ public sealed record TupleType(IReadOnlyList<IType> Types) : IType
     public IType Purify() =>
         new TupleType(Types.Select(t => t.Purify()).ToList());
 
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) =>
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) =>
         new TupleType(Types.Select(t => t.Instantiate(var)).ToList());
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>

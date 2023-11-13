@@ -17,9 +17,9 @@ internal sealed class TypeVariableInator
     /// <summary>
     /// Returns a function for handling instantiations.
     /// </summary>
-    public Func<TypeParameter, TypeVariable> Instantiation()
+    public Func<ITypeParameter, TypeVariable> Instantiation()
     {
-        var vars = null as Dictionary<TypeParameter, TypeVariable>;
+        var vars = null as Dictionary<ITypeParameter, TypeVariable>;
 
         return param =>
         {

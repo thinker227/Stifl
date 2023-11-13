@@ -28,7 +28,7 @@ public sealed record WellKnownType(WellKnownTypeKind Kind) : IType
 
     public IType Purify() => this;
 
-    public IType Instantiate(Func<TypeParameter, TypeVariable> var) => this;
+    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => this;
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
 
