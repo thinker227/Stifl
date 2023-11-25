@@ -25,7 +25,7 @@ public sealed class TupleValue(TupleType type, Func<ImmutableArray<IValue>> eval
     }
 
     public IEnumerator<IValue> GetEnumerator() =>
-        ((IEnumerable<IValue>)Eval()).GetEnumerator();
+        Eval().AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
