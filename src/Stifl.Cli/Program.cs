@@ -1,5 +1,4 @@
-﻿using Pidgin;
-using Stifl;
+﻿using Stifl;
 
 if (args is not [var path])
 {
@@ -9,14 +8,12 @@ if (args is not [var path])
 
 var source = File.ReadAllText(path);
 
-var unit = Parse.Unit.Full().ParseOrThrow(source);
-var (scopes, symbols) = unit.ResolveScopes();
-var types = TypeResolve.ResolveTypes(unit, scopes, symbols);
+var compilation = Compilation.Create(source);
 
-var bindings = unit.Decls.OfType<Ast.Decl.Binding>();
+var bindings = compilation.Root.Decls.OfType<Ast.Decl.Binding>();
 var maxNameWidth = bindings.Select(x => x.Name.Length).Max();
 var bindingTypes = bindings
-    .Select(b => (b, types[b].ToString()));
+    .Select(b => (b, compilation.TypeOf(b).ToString()));
 
 foreach (var (binding, str) in bindingTypes)
 {
