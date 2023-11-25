@@ -12,13 +12,12 @@ var compilation = Compilation.Create(source);
 
 var bindings = compilation.Root.Decls.OfType<Ast.Decl.Binding>();
 var maxNameWidth = bindings.Select(x => x.Name.Length).Max();
-var bindingTypes = bindings
-    .Select(b => (b, compilation.TypeOf(b).ToString()));
 
-foreach (var (binding, str) in bindingTypes)
+foreach (var binding in bindings)
 {
     var name = $"{binding.Name}:".PadRight(maxNameWidth + 1);
-    Console.WriteLine($"{name} {str}");
+    var type = compilation.TypeOf(binding);
+    Console.WriteLine($"{name} {type}");
 }
 
 return 0;
