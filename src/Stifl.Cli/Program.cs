@@ -1,4 +1,5 @@
 ﻿using Stifl;
+using Stifl.Interpret;
 
 if (args is not [var path])
 {
@@ -18,6 +19,15 @@ foreach (var binding in bindings)
     var name = $"{binding.Name}:".PadRight(maxNameWidth + 1);
     var type = compilation.TypeOf(binding);
     Console.WriteLine($"{name} {type}");
+}
+
+var main = bindings.FirstOrDefault(b => b.Name == "main");
+if (main is not null && compilation.TypeOf(main) is { ForallTypes.Count: 0 })
+{
+    var interpreter = new Interpreter(compilation);
+    var retValue = interpreter.Evaluate(main).Eval();
+
+    Console.WriteLine($"\n{retValue}");
 }
 
 return 0;
