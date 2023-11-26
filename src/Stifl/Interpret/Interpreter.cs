@@ -96,7 +96,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
 
     private Compilation Compilation => interpreter.Compilation;
 
-    protected override IValue Default => throw new InvalidOperationException();
+    protected override IValue Default => throw new UnreachableException();
 
     public override IValue VisitBindingDecl(Ast.Decl.Binding node)
     {
@@ -109,7 +109,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     }
 
     public override IValue VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node) =>
-        throw new InvalidOperationException("Evaluate undefined.");
+        throw new InterpretException("Evaluate undefined.");
 
     public override IValue VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node) =>
         BoolValue.Const(node.Value);
@@ -128,9 +128,10 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
 
     public override IValue VisitIfExpr(Ast.Expr.If node)
     {
-        if (VisitNode(node.Condition) is not BoolValue condition)
-            throw new InvalidOperationException(
-                "If condition has to be a boolean.");
+        var conditionValue = VisitNode(node.Condition);
+        if (conditionValue is not BoolValue condition)
+            throw new TypeMismatchException(
+                "Condition in if-expression has to be a boolean.");
 
         return condition.Eval()
             ? VisitNode(node.IfTrue)
@@ -164,8 +165,9 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var type = Compilation.TypeOf(node);
         var values = node.Values.Select(VisitNode);
         return ListValue.FromList(type, values)
-            ?? throw new InvalidOperationException(
-                "List expression has inconsistent types.");
+            ?? throw new TypeMismatchException(
+                "List expression has inconsistent types, " +
+                $"expected values to have type {type.Containing}.");
     }
 
     public override IValue VisitFuncExpr(Ast.Expr.Func node)
@@ -180,7 +182,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     {
         var fv = VisitNode(node.Function);
         var function = fv as FunctionValue
-            ?? throw new InvalidOperationException(
+            ?? throw new TypeMismatchException(
                 $"Cannot call a value of type {fv.Type}.");
 
         var argument = VisitNode(node.Argument);
@@ -217,8 +219,11 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             ctx.Symbols[parameter] = argument!;
 
             context = ctx;
-            var value = VisitNode(func.Body) as TValue
-                ?? throw new InvalidOperationException("Bad value.");
+            var bodyValue = VisitNode(func.Body);
+            var value = bodyValue as TValue
+                ?? throw new InterpretException(
+                    $"The result of evaluating {func.Body} " +
+                    $"is {bodyValue.GetType()}, expected {typeof(TValue)}.");
             context = prevCtx;
 
             return (T)value.Eval()!;
