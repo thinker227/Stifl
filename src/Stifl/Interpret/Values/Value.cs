@@ -58,6 +58,8 @@ public interface IValue<T> : IValue
 /// Abstract helper for values.
 /// </summary>
 /// <typeparam name="T">The type of an evaluated value.</typeparam>
+/// <typeparam name="TType">The type of the value's type.</typeparam>
+/// <param name="type">The type of the value.</param>
 /// <param name="eval">A function to evaluate the value.</param>
 public abstract class Value<T, TType>(TType type, Func<T> eval) : IValue<T>
     where TType : IType
