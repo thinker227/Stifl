@@ -70,11 +70,13 @@ file sealed class TypeAnnotateVisitor(SymbolSet symbols, TypeVariableInator vari
     public override Unit VisitLetExpr(Expr.Let node)
     {
         var symbol = symbols[node];
-        Annotate(symbol, annotations[node.Value]);
 
         VisitNodeOrNull(node.AnnotatedType);
         VisitNode(node.Expression);
         VisitNode(node.Value);
+
+        // Has to visit node.Value before annotating the symbol.
+        Annotate(symbol, annotations[node.Value]);
 
         return Default;
     }
