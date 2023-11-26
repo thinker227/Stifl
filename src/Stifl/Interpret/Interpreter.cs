@@ -53,7 +53,7 @@ public sealed class Interpreter
 
 internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<IValue>
 {
-    private readonly Stack<Context> contexts = new([new(null, [])]);
+    private Context context = new(null, []);
 
     private Compilation Compilation => interpreter.Compilation;
 
@@ -64,7 +64,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var value = VisitNode(node.Expression);
         var symbol = Compilation.SymbolOf(node);
 
-        contexts.Peek().Symbols[symbol] = value;
+        context.Symbols[symbol] = value;
 
         return value;
     }
@@ -84,7 +84,6 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     public override IValue VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
         var symbol = Compilation.ReferencedSymbolOf(node)!;
-        var context = contexts.Peek();
         return context.Lookup(symbol);
     }
 
@@ -104,12 +103,13 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var varValue = VisitNode(node.Value);
         var symbol = Compilation.SymbolOf(node);
 
-        var context = new Context(contexts.Peek(), []);
-        context.Symbols[symbol] = varValue;
+        var parentCtx = context;
+        var ctx = new Context(context, []);
+        ctx.Symbols[symbol] = varValue;
 
-        contexts.Push(context);
+        context = ctx;
         var value = VisitNode(node.Expression);
-        contexts.Pop();
+        context = parentCtx;
 
         return value;
     }
@@ -132,7 +132,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     public override IValue VisitFuncExpr(Ast.Expr.Func node)
     {
         var type = Compilation.TypeOf(node);
-        var context = contexts.Peek();
+        var ctx = context;
 
         // TODO: Capture context.
         return new FunctionValue(type, () => node);
@@ -145,7 +145,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             ?? throw new InvalidOperationException(
                 $"Cannot call a value of type {fv.Type}.");
 
-        var parentContext = contexts.Peek();
+        var parentCtx = context;
         var argument = VisitNode(node.Argument);
 
         Func<T> Call<T, TValue>()
@@ -154,13 +154,13 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             var func = function!.Eval();
 
             var parameter = Compilation.SymbolOf(func);
-            var context = new Context(parentContext, []);
-            context.Symbols[parameter] = argument!;
+            var ctx = new Context(parentCtx, []);
+            ctx.Symbols[parameter] = argument!;
 
-            contexts.Push(context);
+            context = ctx;
             var value = VisitNode(func.Body) as TValue
                 ?? throw new InvalidOperationException("Bad value.");
-            contexts.Pop();
+            context = parentCtx;
 
             return (T)value.Eval()!;
         };
