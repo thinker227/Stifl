@@ -136,5 +136,11 @@ public static class ValueExtensions
         value.TryGetValue(out var x);
         return x;
     }
-}
 
+    /// <inheritdoc cref="GetValueOrDefault"/>
+    public static T? GetValueOrDefault<T>(this IValue<T> value)
+    {
+        value.TryGetValue(out var x);
+        return x;
+    }
+}
