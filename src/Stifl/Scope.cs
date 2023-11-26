@@ -210,7 +210,7 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
     public override Unit VisitLetExpr(Ast.Expr.Let node)
     {
         VisitNodeOrNull(node.AnnotatedType);
-        VisitNode(node.Expression);
+        VisitNode(node.Value);
         InScope(node, () =>
         {
             Register(new Variable(node.Name, node), node);
