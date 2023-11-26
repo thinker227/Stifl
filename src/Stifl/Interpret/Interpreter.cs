@@ -148,23 +148,6 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var parentCtx = context;
         var argument = VisitNode(node.Argument);
 
-        Func<T> Call<T, TValue>()
-            where TValue : class, IValue<T> => () =>
-        {
-            var func = function!.Eval();
-
-            var parameter = Compilation.SymbolOf(func);
-            var ctx = new Context(parentCtx, []);
-            ctx.Symbols[parameter] = argument!;
-
-            context = ctx;
-            var value = VisitNode(func.Body) as TValue
-                ?? throw new InvalidOperationException("Bad value.");
-            context = parentCtx;
-
-            return (T)value.Eval()!;
-        };
-
         return function.Type.Return switch
         {
             FuncType t => new FunctionValue(t, Call<Ast.Expr.Func, FunctionValue>()),
@@ -183,6 +166,23 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
                 new UnitValue(Call<Unit, UnitValue>()),
 
             _ => throw new NotImplementedException(),
+        };
+
+        Func<T> Call<T, TValue>()
+            where TValue : class, IValue<T> => () =>
+        {
+            var func = function!.Eval();
+
+            var parameter = Compilation.SymbolOf(func);
+            var ctx = new Context(parentCtx, []);
+            ctx.Symbols[parameter] = argument!;
+
+            context = ctx;
+            var value = VisitNode(func.Body) as TValue
+                ?? throw new InvalidOperationException("Bad value.");
+            context = parentCtx;
+
+            return (T)value.Eval()!;
         };
     }
 
