@@ -66,13 +66,20 @@ public sealed class Compilation
         parents ??= node.GetParents();
         return parents.GetValueOrDefault(node);
     }
-        // (parents ??= node.GetParents()).GetValueOrDefault(node);
 
     /// <summary>
     /// Gets the scope of a node.
     /// </summary>
     /// <param name="node">The node to get the scope of.</param>
     public Scope ScopeOf(Ast node) => scopes[node];
+
+    /// <summary>
+    /// Gets the referenced symbol of an <see cref="Ast.Expr.Identifier"/>,
+    /// or <see langword="null"/> if the identifier references an invalid symbol.
+    /// </summary>
+    /// <param name="identifier">The <see cref="Ast.Expr.Identifier"/> to get the referenced symbol of.</param>
+    public ISymbol? ReferencedSymbolOf(Ast.Expr.Identifier identifier) =>
+        ScopeOf(identifier).Lookup(identifier.Name);
 
     /// <summary>
     /// Gets the symbol declared by a node,
@@ -123,6 +130,24 @@ public sealed class Compilation
     /// </summary>
     /// <param name="expr">The <see cref="Ast.Expr"/> to get the type of.</param>
     public IType TypeOf(Ast.Expr expr) => types[expr];
+
+    /// <summary>
+    /// Gets the type of an <see cref="Ast.Expr.Tuple"/>.
+    /// </summary>
+    /// <param name="func">The <see cref="Ast.Expr.Tuple"/> to get the type of.</param>
+    public TupleType TypeOf(Ast.Expr.Tuple tuple) => (TupleType)types[tuple];
+
+    /// <summary>
+    /// Gets the type of an <see cref="Ast.Expr.List"/>.
+    /// </summary>
+    /// <param name="func">The <see cref="Ast.Expr.List"/> to get the type of.</param>
+    public ListType TypeOf(Ast.Expr.List list) => (ListType)types[list];
+
+    /// <summary>
+    /// Gets the type of an <see cref="Ast.Expr.Func"/>.
+    /// </summary>
+    /// <param name="func">The <see cref="Ast.Expr.Func"/> to get the type of.</param>
+    public FuncType TypeOf(Ast.Expr.Func func) => (FuncType)types[func];
 
     /// <summary>
     /// Gets the type of a symbol,
