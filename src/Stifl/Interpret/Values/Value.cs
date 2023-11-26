@@ -33,11 +33,33 @@ public interface IValue
 }
 
 /// <summary>
+/// A strongly-typed version of <see cref="IValue"/>.
+/// </summary>
+/// <typeparam name="T">The type of an evaluated value.</typeparam>
+public interface IValue<T> : IValue
+{
+    /// <inheritdoc cref="IValue.Eval"/>
+    new T Eval();
+
+    object? IValue.Eval() => Eval();
+
+    /// <inheritdoc cref="IValue.TryGetValue"/>
+    bool TryGetValue([MaybeNullWhen(false)] out T value);
+
+    bool IValue.TryGetValue(out object? value)
+    {
+        var s = TryGetValue(out var x);
+        value = x;
+        return s;
+    }
+}
+
+/// <summary>
 /// Abstract helper for values.
 /// </summary>
 /// <typeparam name="T">The type of an evaluated value.</typeparam>
 /// <param name="eval">A function to evaluate the value.</param>
-public abstract class Value<T, TType>(TType type, Func<T> eval) : IValue
+public abstract class Value<T, TType>(TType type, Func<T> eval) : IValue<T>
     where TType : IType
 {
     private bool isEvaluated = false;
@@ -63,20 +85,11 @@ public abstract class Value<T, TType>(TType type, Func<T> eval) : IValue
         return value!;
     }
 
-    object? IValue.Eval() => Eval();
-
     /// <inheritdoc cref="IValue.TryGetValue"/>
     public bool TryGetValue([MaybeNullWhen(false)] out T value)
     {
         value = this.value;
         return isEvaluated;
-    }
-
-    bool IValue.TryGetValue(out object? value)
-    {
-        var s = TryGetValue(out var x);
-        value = x;
-        return s;
     }
 
     public override string? ToString() =>
