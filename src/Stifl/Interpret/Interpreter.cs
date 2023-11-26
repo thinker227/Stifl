@@ -6,41 +6,80 @@ namespace Stifl.Interpret;
 /// <summary>
 /// An interpreter for a <see cref="Compilation"/>.
 /// </summary>
-/// <param name="compilation">The compilation to interpret.</param>
 public sealed class Interpreter
 {
     private readonly InterpreterVisitor visitor;
 
+    /// <summary>
+    /// The compilation which is being interpreted.
+    /// </summary>
     public Compilation Compilation { get; }
 
+    /// <param name="compilation">The compilation to interpret.</param>
     public Interpreter(Compilation compilation)
     {
         visitor = new(this);
         Compilation = compilation;
     }
 
+    /// <summary>
+    /// Evaluates an expression.
+    /// </summary>
+    /// <param name="expr">The expression to evaluate.</param>
     public IValue Evaluate(Ast.Expr expr) => visitor.VisitNode(expr);
 
+    /// <summary>
+    /// Evaluates a <see cref="Ast.Expr.IntLiteral"/>.
+    /// </summary>
+    /// <param name="expr">The <see cref="Ast.Expr.IntLiteral"/> to evaluate.</param>
     public IntValue Evaluate(Ast.Expr.IntLiteral expr) =>
         (IntValue)Evaluate((Ast.Expr)expr);
 
+    /// <summary>
+    /// Evaluates a <see cref="Ast.Expr.BoolLiteral"/>.
+    /// </summary>
+    /// <param name="expr">The <see cref="Ast.Expr.BoolLiteral"/> to evaluate.</param>
     public BoolValue Evaluate(Ast.Expr.BoolLiteral expr) =>
         (BoolValue)Evaluate((Ast.Expr)expr);
 
+    /// <summary>
+    /// Evaluates a <see cref="Ast.Expr.Unit"/>.
+    /// </summary>
+    /// <param name="expr">The <see cref="Ast.Expr.Unit"/> to evaluate.</param>
     public UnitValue Evaluate(Ast.Expr.Unit expr) =>
         (UnitValue)Evaluate((Ast.Expr)expr);
 
+    /// <summary>
+    /// Evaluates a <see cref="Ast.Expr.Func"/>.
+    /// </summary>
+    /// <param name="expr">The <see cref="Ast.Expr.Func"/> to evaluate.</param>
     public FunctionValue Evaluate(Ast.Expr.Func expr) =>
         (FunctionValue)Evaluate((Ast.Expr)expr);
 
+    /// <summary>
+    /// Evaluates a <see cref="Ast.Decl.Binding"/>.
+    /// </summary>
+    /// <param name="binding">The <see cref="Ast.Decl.Binding"/> to evaluate.</param>
     public IValue Evaluate(Ast.Decl.Binding binding) => visitor.VisitNode(binding);
 
+    /// <summary>
+    /// Calls a function with a value as its argument.
+    /// </summary>
+    /// <param name="func">The function to call.</param>
+    /// <param name="arg">The argument to the function.</param>
+    /// <returns>The return value of the function.</returns>
     public IValue Call(Ast.Expr.Func func, IValue arg)
     {
         var value = Evaluate(func);
         return Call(value, arg);
     }
 
+    /// <summary>
+    /// Calls a function with a value as its argument.
+    /// </summary>
+    /// <param name="function">The function to call.</param>
+    /// <param name="arg">The argument to the function.</param>
+    /// <returns>The return value of the function.</returns>
     public IValue Call(FunctionValue function, IValue arg)
     {
         if (!arg.Type.Equals(function.Type.Parameter))

@@ -3,7 +3,7 @@ using Stifl.Types;
 namespace Stifl.Interpret;
 
 /// <summary>
-/// A integer value.
+/// An integer value.
 /// </summary>
 /// <param name="eval">A function to evaluate the value.</param>
 public sealed class IntValue(Func<int> eval)
