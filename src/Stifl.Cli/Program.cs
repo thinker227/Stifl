@@ -25,7 +25,8 @@ var main = bindings.FirstOrDefault(b => b.Name == "main");
 if (main is not null && compilation.TypeOf(main) is { ForallTypes.Count: 0 })
 {
     var interpreter = new Interpreter(compilation);
-    var retValue = interpreter.Evaluate(main).Eval();
+    var interpretedValue = interpreter.Evaluate(main);
+    var retValue = interpretedValue.Eval();
 
     Console.WriteLine($"\n{retValue}");
 }
