@@ -9,6 +9,7 @@ namespace Stifl.Interpret;
 /// </summary>
 /// <param name="type">The type of the list.</param>
 /// <param name="eval">A function to evaluate the value.</param>
+/// <remarks>Enumerating this type will evaluate it (but not its elements).</remarks>
 public sealed class ListValue(ListType type, Func<(IValue, ListValue)?> eval)
     : Value<(IValue head, ListValue tail)?, ListType>(type, eval), IEnumerable<IValue>
 {
