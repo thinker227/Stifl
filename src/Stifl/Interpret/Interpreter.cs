@@ -115,7 +115,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     }
 
     public override IValue VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node) =>
-        throw new InterpretException("Evaluate undefined.");
+        throw new EvaluationException("Evaluate undefined.");
 
     public override IValue VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node) =>
         BoolValue.Const(node.Value);
@@ -130,7 +130,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     {
         var symbol = Compilation.ReferencedSymbolOf(node)!;
         return context.Lookup(symbol)
-            ?? throw new InterpretException($"No value for symbol {symbol} exists.");
+            ?? throw new EvaluationException($"No value for symbol {symbol} exists.");
     }
 
     public override IValue VisitIfExpr(Ast.Expr.If node)
@@ -228,7 +228,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             context = ctx;
             var bodyValue = VisitNode(func.Body);
             var value = bodyValue as TValue
-                ?? throw new InterpretException(
+                ?? throw new EvaluationException(
                     $"The result of evaluating {func.Body} " +
                     $"is {bodyValue.GetType()}, expected {typeof(TValue)}.");
             context = prevCtx;
