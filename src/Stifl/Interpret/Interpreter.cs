@@ -63,6 +63,12 @@ public sealed class Interpreter
     public IValue Evaluate(Ast.Decl.Binding binding) => visitor.VisitNode(binding);
 
     /// <summary>
+    /// Evaluates a <see cref="Binding"/>.
+    /// </summary>
+    /// <param name="binding">The <see cref="Binding"/> to evaluate.</param>
+    public IValue Evaluate(Binding binding) => visitor.VisitNode(binding.Declaration);
+    
+    /// <summary>
     /// Calls a function with a value as its argument.
     /// </summary>
     /// <param name="func">The function to call.</param>
@@ -92,7 +98,7 @@ public sealed class Interpreter
 
 internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<IValue>
 {
-    private EvaluationContext context = new(null, []);
+    private EvaluationContext context = new(interpreter, null, []);
 
     private Compilation Compilation => interpreter.Compilation;
 
@@ -123,7 +129,8 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
     public override IValue VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
         var symbol = Compilation.ReferencedSymbolOf(node)!;
-        return context.Lookup(symbol);
+        return context.Lookup(symbol)
+            ?? throw new InterpretException($"No value for symbol {symbol} exists.");
     }
 
     public override IValue VisitIfExpr(Ast.Expr.If node)
@@ -144,7 +151,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var symbol = Compilation.SymbolOf(node);
 
         var parentCtx = context;
-        var ctx = new EvaluationContext(parentCtx, []);
+        var ctx = new EvaluationContext(interpreter, parentCtx, []);
         ctx.Symbols[symbol] = varValue;
 
         context = ctx;
@@ -215,7 +222,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             var parameter = Compilation.SymbolOf(func);
 
             var prevCtx = context;
-            var ctx = new EvaluationContext(funcCtx, []);
+            var ctx = new EvaluationContext(interpreter, funcCtx, []);
             ctx.Symbols[parameter] = argument!;
 
             context = ctx;
