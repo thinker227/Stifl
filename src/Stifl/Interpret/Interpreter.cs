@@ -53,7 +53,7 @@ public sealed class Interpreter
 
 internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<IValue>
 {
-    private Context context = new(null, []);
+    private EvaluationContext context = new(null, []);
 
     private Compilation Compilation => interpreter.Compilation;
 
@@ -104,7 +104,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var symbol = Compilation.SymbolOf(node);
 
         var parentCtx = context;
-        var ctx = new Context(context, []);
+        var ctx = new EvaluationContext(parentCtx, []);
         ctx.Symbols[symbol] = varValue;
 
         context = ctx;
@@ -134,8 +134,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         var type = Compilation.TypeOf(node);
         var ctx = context;
 
-        // TODO: Capture context.
-        return new FunctionValue(type, () => node);
+        return new FunctionValue(type, () => (node, ctx));
     }
 
     public override IValue VisitCallExpr(Ast.Expr.Call node)
@@ -145,12 +144,11 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
             ?? throw new InvalidOperationException(
                 $"Cannot call a value of type {fv.Type}.");
 
-        var parentCtx = context;
         var argument = VisitNode(node.Argument);
 
         return function.Type.Return switch
         {
-            FuncType t => new FunctionValue(t, Call<Ast.Expr.Func, FunctionValue>()),
+            FuncType t => new FunctionValue(t, Call<(Ast.Expr.Func, EvaluationContext), FunctionValue>()),
             
             ListType t => new ListValue(t, Call<(IValue, ListValue)?, ListValue>()),
 
@@ -171,16 +169,18 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
         Func<T> Call<T, TValue>()
             where TValue : class, IValue<T> => () =>
         {
-            var func = function!.Eval();
+            var (func, funcCtx) = function!.Eval();
 
             var parameter = Compilation.SymbolOf(func);
-            var ctx = new Context(parentCtx, []);
+
+            var prevCtx = context;
+            var ctx = new EvaluationContext(funcCtx, []);
             ctx.Symbols[parameter] = argument!;
 
             context = ctx;
             var value = VisitNode(func.Body) as TValue
                 ?? throw new InvalidOperationException("Bad value.");
-            context = parentCtx;
+            context = prevCtx;
 
             return (T)value.Eval()!;
         };
@@ -188,13 +188,4 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
 
     public override IValue VisitAnnotatedExpr(Ast.Expr.Annotated node) =>
         VisitNode(node.Expression);
-}
-
-internal sealed record Context(Context? Parent, Dictionary<ISymbol, IValue> Symbols)
-{
-    public IValue Lookup(ISymbol symbol) =>
-        Symbols.GetValueOrDefault(symbol)
-            ?? Parent?.Lookup(symbol)
-                ?? throw new InvalidOperationException(
-                    $"No value for symbol {symbol} exists.");
 }
