@@ -148,7 +148,7 @@ internal sealed class InterpreterVisitor(Interpreter interpreter) : AstVisitor<I
 
         return function.Type.Return switch
         {
-            FuncType t => new FunctionValue(t, Call<(Ast.Expr.Func, EvaluationContext), FunctionValue>()),
+            FuncType t => new FunctionValue(t, Call<(Ast.Expr.Func, IEvaluationContext), FunctionValue>()),
             
             ListType t => new ListValue(t, Call<(IValue, ListValue)?, ListValue>()),
 
