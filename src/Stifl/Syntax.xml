@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Definitions for syntax nodes -->
+
+<!-- <Root Name="Foo">
+  <Value Name="x" Type="int"/>
+  <Variant Name="Bar">
+    <Value Name="y" Type="string"/>
+    <Node Name="Baz">
+      <Value Name="z" Type="bool"/>
+    </Node>
+  </Variant>
+</Root> -->
+
+<Root Name="Ast">
+  
+  <Node Name="Unit">
+    <List Name="Decls" Type="Decl"/>
+  </Node>
+
+  <Variant Name="Decl">
+    <Node Name="Binding">
+      <Value Name="Name" Type="string" Primitive="true"/>
+      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
+      <Value Name="Expression" Type="Expr"/>
+    </Node>
+  </Variant>
+
+  <Variant Name="Expr">
+    <Node Name="Unit"/>
+    <Node Name="UndefinedLiteral"/>
+    <Node Name="BoolLiteral">
+      <Value Name="Value" Type="bool" Primitive="true"/>
+    </Node>
+    <Node Name="IntLiteral">
+      <Value Name="Value" Type="int" Primitive="true"/>
+    </Node>
+    <Node Name="Identifier">
+      <Value Name="Name" Type="string" Primitive="true"/>
+    </Node>
+    <Node Name="Func">
+      <Value Name="Parameter" Type="string" Primitive="true"/>
+      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
+      <Value Name="Body" Type="Expr"/>
+    </Node>
+    <Node Name="If">
+      <Value Name="Condition" Type="Expr"/>
+      <Value Name="IfTrue" Type="Expr"/>
+      <Value Name="IfFalse" Type="Expr"/>
+    </Node>
+    <Node Name="Call">
+      <Value Name="Function" Type="Expr"/>
+      <Value Name="Argument" Type="Expr"/>
+    </Node>
+    <Node Name="Let">
+      <Value Name="Name" Type="string"/>
+      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
+      <Value Name="Expression" Type="Expr"/>
+    </Node>
+    <Node Name="Tuple">
+      <List Name="Values" Type="Expr"/>
+    </Node>
+    <Node Name="List">
+      <List Name="Values" Type="Expr"/>
+    </Node>
+    <Node Name="Annotated">
+      <Value Name="Expression" Type="Expr"/>
+      <Value Name="Annotation" Type="Type"/>
+    </Node>
+  </Variant>
+
+  <Variant Name="Type">
+    <Node Name="Unit"/>
+    <Node Name="Int"/>
+    <Node Name="Bool"/>
+    <Node Name="Func">
+      <Value Name="Parameter" Type="Type"/>
+      <Value Name="Return" Type="Type"/>
+    </Node>
+    <Node Name="Tuple">
+      <List Name="Values" Type="Type"/>
+    </Node>
+    <Node Name="List">
+      <Value Name="Containing" Type="Type"/>
+    </Node>
+    <Node Name="Var">
+      <Value Name="Name" Type="string" Primitive="true"/>
+    </Node>
+  </Variant>
+  
+</Root>

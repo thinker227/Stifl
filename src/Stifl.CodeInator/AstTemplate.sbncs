@@ -1,0 +1,121 @@
+{{- ## The generated code is whitespace-normalized,
+the template therefore doesn't have to worry about whitespace. ## -}}
+
+{{ func render_node(node, parent, parent_members) }}
+
+    public {{ if node.is_variant }} abstract {{ else }} sealed {{ end }} record {{ node.name }}
+    {{ $members = array.add_range parent_members node.members }}
+    {{ if $members.size != 0 }}
+        (
+        {{ for member in $members }}
+            {{ if member.is_list }}
+                ImmutableArray<{{ member.type }}>
+            {{ else }}
+                {{ member.type }}
+            {{ end }}
+            {{ if member.is_optional }}
+                ?
+            {{ end }}
+            {{ member.name }}
+            {{ if !for.last }}
+                ,
+            {{ end }}
+        {{ end }}
+        )
+    {{ end }}
+    {{ if parent != null }}
+        : {{ parent.name }}
+        {{ if parent_members.size != 0 }}
+            (
+            {{ for member in parent_members }}
+                {{ member.name }}
+                {{ if !for.last }}
+                    ,
+                {{ end }}
+            {{ end }}
+            )
+        {{ end }}
+    {{ end }}
+    {{ if !node.is_variant }}
+    ;
+    {{ else }}
+    {
+        {{ for child in node.nodes }}
+            {{ render_node child node $members }}
+        {{ end }}
+    }
+    {{ end }}
+
+{{ end }}
+
+
+
+{{ func render_visitor_method(node, parents) }}
+
+    public T Visit{{ node.name }}({{ node.name }} node)
+    {{ if node.is_variant }}
+        => node switch
+        {
+        {{ for child in node.nodes }}
+            {{ child.name }} x => Visit{{ child.name }}(x),
+        {{ end }}
+        _ => throw new UnreachableException()
+        };
+
+        {{ for child in node.nodes }}
+            {{ render_visitor_method child (array.add parents node) }}
+        {{ end }}
+    {{ else }}
+        {
+        {{ for member in node.members }}
+            {{ if !member.is_primitive }}
+                {{ if member.is_optional }}
+                    VisitNodeOrNull(node.{{ member.name }});
+                {{ else if member.is_list }}
+                    VisitMany(node.{{ member.name }});
+                {{ else }}
+                    VisitNode(node.{{ member.name }});
+                {{ end }}
+            {{ end }}
+        {{ end }}
+        return Default;
+        }
+    {{ end }}
+
+{{ end }}
+
+
+
+namespace Stifl;
+
+{{ root.name }}
+
+{{ render_node root null [] }}
+
+public abstract class AstVisitor<T>
+{
+    protected abstract T Default { get; }
+
+    protected virtual void BeforeVisit({{ root.name }} node) {}
+
+    protected virtual void AfterVisit({{ root.name }} node) {}
+
+    protected virtual bool Filter({{ root.name }} node) => true;
+
+    public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }} => nodes.Select(VisitNode).ToList();
+
+    public T VisitNodeOrNull({{ root.name }}? node) => node is not null ? VisitNode(node) : Default;
+
+    public virtual T VisitNode({{ root.name }} node)
+    {
+        if (!Filter(node)) return Default;
+
+        BeforeVisit(node);
+        var x = Visit{{ root.name }}(node);
+        AfterVisit(node);
+
+        return x;
+    }
+
+    {{ render_visitor_method root [] }}
+}

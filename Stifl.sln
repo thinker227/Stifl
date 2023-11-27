@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stifl", "src\Stifl\Stifl.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stifl.Cli", "src\Stifl.Cli\Stifl.Cli.csproj", "{88F760C3-CB1C-48FB-8D4F-F4059ED5F6AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stifl.CodeInator", "src\Stifl.CodeInator\Stifl.CodeInator.csproj", "{6ED4E88F-4378-42FD-9FD0-870B22ADBF29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +28,14 @@ Global
 		{88F760C3-CB1C-48FB-8D4F-F4059ED5F6AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F760C3-CB1C-48FB-8D4F-F4059ED5F6AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F760C3-CB1C-48FB-8D4F-F4059ED5F6AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ED4E88F-4378-42FD-9FD0-870B22ADBF29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ED4E88F-4378-42FD-9FD0-870B22ADBF29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ED4E88F-4378-42FD-9FD0-870B22ADBF29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ED4E88F-4378-42FD-9FD0-870B22ADBF29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{95A1C330-6C17-41E5-B601-1C398C733585} = {DDA35D56-40F9-4948-A220-342031778AE8}
 		{88F760C3-CB1C-48FB-8D4F-F4059ED5F6AC} = {DDA35D56-40F9-4948-A220-342031778AE8}
+		{6ED4E88F-4378-42FD-9FD0-870B22ADBF29} = {DDA35D56-40F9-4948-A220-342031778AE8}
 	EndGlobalSection
 EndGlobal
