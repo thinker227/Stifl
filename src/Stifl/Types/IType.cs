@@ -70,10 +70,14 @@ public static class TypeExtensions
         Func<T, IType> sub,
         Func<TType, IType> subContainingTypes)
         where T : IType
-        where TType : IType =>
-        @this is T x
-            ? predicate(x)
-                ? sub(x).Substitute(predicate, sub)
-                : subContainingTypes(@this)
-            : subContainingTypes(@this);
+        where TType : IType
+    {
+        if (@this is not T x || !predicate(x)) return subContainingTypes(@this);
+        
+        // Avoid infinite recursion.
+        var s = sub(x);
+        return s.Equals(x)
+            ? s
+            : s.Substitute(predicate, sub);
+    }
 }
