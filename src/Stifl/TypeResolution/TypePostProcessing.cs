@@ -51,7 +51,7 @@ file sealed class BindingProcessor(
 
     public IType Process(AstOrSymbol x) => annotations[x]
         .Purify()
-        .ReplaceVars(var =>
+        .Substitute<TypeVariable>(var =>
             parameters.GetOrAdd(var, () =>
             {
                 var param = new InferredTypeParameter();
