@@ -134,13 +134,13 @@ public sealed class Compilation
     /// <summary>
     /// Gets the type of an <see cref="Ast.Expr.Tuple"/>.
     /// </summary>
-    /// <param name="func">The <see cref="Ast.Expr.Tuple"/> to get the type of.</param>
+    /// <param name="tuple">The <see cref="Ast.Expr.Tuple"/> to get the type of.</param>
     public TupleType TypeOf(Ast.Expr.Tuple tuple) => (TupleType)types[tuple];
 
     /// <summary>
     /// Gets the type of an <see cref="Ast.Expr.List"/>.
     /// </summary>
-    /// <param name="func">The <see cref="Ast.Expr.List"/> to get the type of.</param>
+    /// <param name="list">The <see cref="Ast.Expr.List"/> to get the type of.</param>
     public ListType TypeOf(Ast.Expr.List list) => (ListType)types[list];
 
     /// <summary>
