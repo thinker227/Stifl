@@ -17,6 +17,10 @@ public sealed record TupleType(IReadOnlyList<IType> Types) : IType
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new TupleType(Types.Select(t => t.ReplaceVars(replace)).ToList());
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new TupleType(
+            x.Types.Select(t => t.Substitute(predicate, sub)).ToList()));
 
     public IEnumerable<IType> Children() => Types;
 

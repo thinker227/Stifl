@@ -21,6 +21,9 @@ public sealed class InferredTypeParameter : ITypeParameter
     public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => x);
 
     public IEnumerable<IType> Children() => [];
 
@@ -47,6 +50,9 @@ public sealed class TypeParameter(string name) : ITypeParameter, ISymbol
     public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new TypeParameter(name));
 
     public IEnumerable<IType> Children() => [];
 

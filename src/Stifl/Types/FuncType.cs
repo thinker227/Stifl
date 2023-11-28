@@ -16,6 +16,11 @@ public sealed record FuncType(IType Parameter, IType Return) : IType
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new FuncType(Parameter.ReplaceVars(replace), Return.ReplaceVars(replace));
 
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new FuncType(
+            x.Parameter.Substitute(predicate, sub),
+            x.Return.Substitute(predicate, sub)));
+
     public IEnumerable<IType> Children() => [Parameter, Return];
 
     public override string ToString() =>

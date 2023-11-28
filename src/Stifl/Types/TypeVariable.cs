@@ -43,10 +43,14 @@ public sealed class TypeVariable(int Index) : IType
     public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => substitution?.Instantiate(var) ?? this;
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
-        (substitution is not null
-                ? substitution
-                : replace(this))
+        (substitution ?? replace(this))
             .ReplaceVars(replace);
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x =>
+            x.HasSustitution
+                ? x.Substitution.Substitute(predicate, sub)
+                : x);
 
     public IEnumerable<IType> Children() =>
         substitution is not null

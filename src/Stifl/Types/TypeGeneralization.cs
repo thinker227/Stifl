@@ -21,6 +21,10 @@ public sealed record TypeGeneralization(
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new TypeGeneralization(ForallTypes, Containing.ReplaceVars(replace));
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new TypeGeneralization(
+            x.ForallTypes, x.Substitute(predicate, sub)));
 
     public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 
@@ -61,6 +65,10 @@ internal sealed class GeneralizationBuilder(
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new GeneralizationBuilder(Containing.ReplaceVars(replace));
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new GeneralizationBuilder(
+            x.Containing.Substitute(predicate, sub), x.ForallTypes));
 
     public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 

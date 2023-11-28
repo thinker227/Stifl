@@ -13,6 +13,10 @@ public sealed record ListType(IType Containing) : IType
 
     public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
         new ListType(Containing.ReplaceVars(replace));
+    
+    public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
+        TypeExtensions.Sub(this, predicate, sub, x => new ListType(
+            x.Containing.Substitute(predicate, sub)));
 
     public IEnumerable<IType> Children() => [Containing];
 
