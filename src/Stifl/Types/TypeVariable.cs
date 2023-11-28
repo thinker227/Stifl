@@ -37,14 +37,6 @@ public sealed class TypeVariable(int Index) : IType
 
         substitution = type;
     }
-
-    public IType Purify() => substitution?.Purify() ?? this;
-
-    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => substitution?.Instantiate(var) ?? this;
-
-    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
-        (substitution ?? replace(this))
-            .ReplaceVars(replace);
     
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x =>

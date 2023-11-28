@@ -9,15 +9,6 @@ public sealed record TupleType(IReadOnlyList<IType> Types) : IType
 {
     public int Arity => Types.Count;
     
-    public IType Purify() =>
-        new TupleType(Types.Select(t => t.Purify()).ToList());
-
-    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) =>
-        new TupleType(Types.Select(t => t.Instantiate(var)).ToList());
-
-    public IType ReplaceVars(Func<TypeVariable, IType> replace) =>
-        new TupleType(Types.Select(t => t.ReplaceVars(replace)).ToList());
-    
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x => new TupleType(
             x.Types.Select(t => t.Substitute(predicate, sub)).ToList()));

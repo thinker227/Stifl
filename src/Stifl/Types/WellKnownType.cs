@@ -25,12 +25,6 @@ public sealed record WellKnownType(WellKnownTypeKind Kind) : IType
     /// The bottom type.
     /// </summary>
     public static WellKnownType Bottom { get; } = new WellKnownType(WellKnownTypeKind.Bottom);
-
-    public IType Purify() => this;
-
-    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => this;
-
-    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
     
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x => x);

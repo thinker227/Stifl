@@ -15,12 +15,6 @@ public sealed class InferredTypeParameter : ITypeParameter
 
     private readonly int index = currentIndex++;
 #endif
-
-    public IType Purify() => this;
-    
-    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
-
-    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
     
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x => x);
@@ -44,12 +38,6 @@ public sealed class TypeParameter(string name) : ITypeParameter, ISymbol
     /// The name of the type parameter without the leading <c>'</c>.
     /// </summary>
     public string OrdinalName => name;
-
-    public IType Purify() => this;
-    
-    public IType Instantiate(Func<ITypeParameter, TypeVariable> var) => var(this);
-
-    public IType ReplaceVars(Func<TypeVariable, IType> replace) => this;
     
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x => new TypeParameter(name));
