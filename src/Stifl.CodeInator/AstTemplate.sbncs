@@ -90,6 +90,49 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 
 
+{{ func render_visitor_void_method(node, parents) }}
+
+    {{ $type_name = type_name node parents }}
+    {{ $method_name = method_name node parents }}
+    {{ $new_parents = array.add parents node }}
+
+    public virtual void {{ $method_name }}({{ $type_name }} node)
+    {{ if node.is_variant }}
+        {
+        switch (node)
+        {
+        {{ for child in node.nodes }}
+            case {{ type_name child $new_parents }} x:
+            {{ method_name child $new_parents }}(x);
+            break;
+        {{ end }}
+        default: throw new UnreachableException();
+        }
+        }
+
+        {{ for child in node.nodes }}
+            {{ render_visitor_void_method child $new_parents }}
+        {{ end }}
+    {{ else }}
+        {
+        {{ for member in node.members }}
+            {{ if !member.is_primitive }}
+                {{ if member.is_optional }}
+                    VisitNodeOrNull(node.{{ member.name }});
+                {{ else if member.is_list }}
+                    VisitMany(node.{{ member.name }});
+                {{ else }}
+                    VisitNode(node.{{ member.name }});
+                {{ end }}
+            {{ end }}
+        {{ end }}
+        }
+    {{ end }}
+
+{{ end }}
+
+
+
 namespace Stifl;
 
 #nullable enable
@@ -124,4 +167,34 @@ public abstract class {{ root.name }}Visitor<T>
     }
 
     {{ render_visitor_method root [] }}
+}
+
+public abstract class {{ root.name }}Visitor
+{
+    protected virtual void BeforeVisit({{ root.name }} node) {}
+
+    protected virtual void AfterVisit({{ root.name }} node) {}
+
+    protected virtual bool Filter({{ root.name }} node) => true;
+
+    public void VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }}
+    {
+        foreach (var x in nodes) VisitNode(x);
+    }
+
+    public void VisitNodeOrNull({{ root.name }}? node)
+    {
+        if (node is not null) VisitNode(node);
+    }
+
+    public virtual void VisitNode({{ root.name }} node)
+    {
+        if (!Filter(node)) return;
+
+        BeforeVisit(node);
+        Visit{{ root.name }}(node);
+        AfterVisit(node);
+    }
+
+    {{ render_visitor_void_method root [] }}
 }
