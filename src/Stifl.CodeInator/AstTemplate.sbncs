@@ -50,6 +50,37 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 
 
+{{ func render_children_getter(node, parents, parent_members) }}
+
+    {{ $members = array.add_range parent_members node.members }}
+
+    {{ if !node.is_variant }}
+        {{ type_name node parents }} x => [
+            {{ for member in $members }}
+                {{ if !member.is_primitive }}
+                    {{ if member.is_list }}
+                        ..x.{{ member.name }}
+                    {{ else if member.is_optional }}
+                        ..EmptyIfNull(x.{{ member.name }})
+                    {{ else }}
+                        x.{{ member.name }}
+                    {{ end }}
+                    {{ if !for.last }}
+                        ,
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+        ],
+    {{ else }}
+        {{ for child in node.nodes }}
+            {{ render_children_getter child (array.add parents child) (array.add_range parent_members node.members) }}
+        {{ end }}
+    {{ end }}
+
+{{ end }}
+
+
+
 {{ func render_member_visits(members) }}
 
     {{ for member in members }}
@@ -145,6 +176,17 @@ namespace Stifl;
 #pragma warning disable CS0108
 
 {{ render_node root null [] }}
+
+partial record {{ root.name }} : INode<{{ root.name }}>
+{
+    private static IEnumerable<T> EmptyIfNull<T>(T? value) => value is not null ? [value] : [];
+
+    public IEnumerable<Ast> Children() => this switch
+    {
+        {{ render_children_getter root [] [] }}
+        _ => throw new UnreachableException()
+    };
+}
 
 public abstract class {{ root.name }}Visitor<T> where T : notnull
 {

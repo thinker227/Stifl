@@ -39,6 +39,35 @@ public abstract partial record Ast
     }
 }
 
+partial record Ast : INode<Ast>
+{
+    private static IEnumerable<T> EmptyIfNull<T>(T? value) => value is not null ? [value] : [];
+    public IEnumerable<Ast> Children() => this switch
+    {
+        Unit.Unit x => [..x.Decls],
+        Decl.Binding.Binding x => [..EmptyIfNull(x.AnnotatedType), x.Expression],
+        Expr.Unit.Unit x => [],
+        Expr.UndefinedLiteral.UndefinedLiteral x => [],
+        Expr.BoolLiteral.BoolLiteral x => [],
+        Expr.IntLiteral.IntLiteral x => [],
+        Expr.Identifier.Identifier x => [],
+        Expr.Func.Func x => [..EmptyIfNull(x.AnnotatedType), x.Body],
+        Expr.If.If x => [x.Condition, x.IfTrue, x.IfFalse],
+        Expr.Call.Call x => [x.Function, x.Argument],
+        Expr.Let.Let x => [..EmptyIfNull(x.AnnotatedType), x.Value, x.Expression],
+        Expr.Tuple.Tuple x => [..x.Values],
+        Expr.List.List x => [..x.Values],
+        Expr.Annotated.Annotated x => [x.Expression, x.Annotation],
+        Type.Unit.Unit x => [],
+        Type.Int.Int x => [],
+        Type.Bool.Bool x => [],
+        Type.Func.Func x => [x.Parameter, x.Return],
+        Type.Tuple.Tuple x => [..x.Types],
+        Type.List.List x => [x.Containing],
+        Type.Var.Var x => [],
+        _ => throw new UnreachableException()};
+}
+
 public abstract class AstVisitor<T>
     where T : notnull
 {
