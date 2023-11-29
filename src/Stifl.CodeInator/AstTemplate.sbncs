@@ -98,7 +98,7 @@ namespace Stifl;
 
 {{ render_node root null [] }}
 
-public abstract class AstVisitor<T>
+public abstract class {{ root.name }}Visitor<T>
 {
     protected abstract T Default { get; }
 
