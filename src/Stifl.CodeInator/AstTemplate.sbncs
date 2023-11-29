@@ -1,10 +1,28 @@
 {{- ## The generated code is whitespace-normalized,
 the template therefore doesn't have to worry about whitespace. ## -}}
 
+{{ func render_doc(doc) -}}
+
+{{ string.strip_newlines doc | string.strip }}
+
+{{- end }}
+
 {{ func render_node(node, parent, parent_members) }}
 
-    public {{ if node.is_variant }} abstract {{ else }} sealed {{ end }} partial record {{ node.name }}
     {{ $members = array.add_range parent_members node.members }}
+
+    {{ if node.docs != null }}
+        /// <summary>
+        /// {{ render_doc node.docs }}
+        /// </summary>
+    {{~ end -}}
+    {{- for member in $members -}}
+        {{- if member.docs != null -}}
+            /// <param name="{{ member.name }}">{{ render_doc member.docs }}</param>
+        {{~ end -}}
+    {{ end }}
+
+    public {{ if node.is_variant }} abstract {{ else }} sealed {{ end }} partial record {{ node.name }}
     {{ if $members.size != 0 }}
         (
         {{ for member in $members }}

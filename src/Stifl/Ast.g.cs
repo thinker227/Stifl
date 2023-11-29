@@ -3,38 +3,141 @@ using System.Diagnostics.CodeAnalysis;
 namespace Stifl;
 #nullable enable
 #pragma warning disable CS0108
+/// <summary>
+/// A node in an abstract syntax tree.
+/// </summary>
 public abstract partial record Ast
 {
+    /// <summary>
+    /// A single unit of syntax, equivalent to a file.
+    /// </summary>
+    /// <param name = "Decls">The declarations in the unit.</param>
     public sealed partial record Unit(ImmutableArray<Decl> Decls) : Ast;
+    /// <summary>
+    /// A declaration.
+    /// </summary>
     public abstract partial record Decl : Ast
     {
+        /// <summary>
+        /// A binding declaration.
+        /// </summary>
+        /// <param name = "Name">The name of the binding.</param>
+        /// <param name = "AnnotatedType">The annotated type of the binding.</param>
+        /// <param name = "Expression">The body expression of the binding.</param>
         public sealed partial record Binding(string Name, Type? AnnotatedType, Expr Expression) : Decl;
     }
 
+    /// <summary>
+    /// An expression.
+    /// </summary>
     public abstract partial record Expr : Ast
     {
+        /// <summary>
+        /// A unit literal.
+        /// </summary>
         public sealed partial record Unit : Expr;
+        /// <summary>
+        /// An undefined literal.
+        /// </summary>
         public sealed partial record UndefinedLiteral : Expr;
+        /// <summary>
+        /// A boolean literal.
+        /// </summary>
+        /// <param name = "Value">The value of the literal.</param>
         public sealed partial record BoolLiteral(bool Value) : Expr;
+        /// <summary>
+        /// A 32-bit integer literal.
+        /// </summary>
+        /// <param name = "Value">The value of the literal.</param>
         public sealed partial record IntLiteral(int Value) : Expr;
+        /// <summary>
+        /// An identifier referencing a symbol.
+        /// </summary>
+        /// <param name = "Name">The name of the symbol the identifier is referencing.</param>
         public sealed partial record Identifier(string Name) : Expr;
+        /// <summary>
+        /// A function expression.
+        /// </summary>
+        /// <param name = "Parameter">The name of the function's parameter symbol.</param>
+        /// <param name = "AnnotatedType">The annotated type of the function.</param>
+        /// <param name = "Body">The body expression of the function.</param>
         public sealed partial record Func(string Parameter, Type? AnnotatedType, Expr Body) : Expr;
+        /// <summary>
+        /// An if-else-then expression.
+        /// </summary>
+        /// <param name = "Condition">The if condition.</param>
+        /// <param name = "IfTrue">The expression returned if the condition is true.</param>
+        /// <param name = "IfFalse">The expression returned if the condition if false.</param>
         public sealed partial record If(Expr Condition, Expr IfTrue, Expr IfFalse) : Expr;
+        /// <summary>
+        /// A call expression.
+        /// </summary>
+        /// <param name = "Function">The expression evaluating to the function to call.</param>
+        /// <param name = "Argument">The argument to call the function with.</param>
         public sealed partial record Call(Expr Function, Expr Argument) : Expr;
+        /// <summary>
+        /// A let-in expression.
+        /// </summary>
+        /// <param name = "Name">The name of the declared variable.</param>
+        /// <param name = "AnnotatedType">The annotated type of the variable.</param>
+        /// <param name = "Value">The value of the variable.</param>
+        /// <param name = "Expression">The expression to evaluate with the variable in scope.</param>
         public sealed partial record Let(string Name, Type? AnnotatedType, Expr Value, Expr Expression) : Expr;
+        /// <summary>
+        /// A tuple expression.
+        /// </summary>
+        /// <param name = "Values">The values in the tuple.</param>
         public sealed partial record Tuple(ImmutableArray<Expr> Values) : Expr;
+        /// <summary>
+        /// A list expression.
+        /// </summary>
+        /// <param name = "Values">The values in the list.</param>
         public sealed partial record List(ImmutableArray<Expr> Values) : Expr;
+        /// <summary>
+        /// A type annotation expression.
+        /// </summary>
+        /// <param name = "Expression">The annotated expression.</param>
+        /// <param name = "Annotation">The type the expression is annotated with</param>
         public sealed partial record Annotated(Expr Expression, Type Annotation) : Expr;
     }
 
+    /// <summary>
+    /// A type.
+    /// </summary>
     public abstract partial record Type : Ast
     {
+        /// <summary>
+        /// The unit type.
+        /// </summary>
         public sealed partial record Unit : Type;
+        /// <summary>
+        /// The 32-bit integer type.
+        /// </summary>
         public sealed partial record Int : Type;
+        /// <summary>
+        /// The boolean type.
+        /// </summary>
         public sealed partial record Bool : Type;
+        /// <summary>
+        /// A function type.
+        /// </summary>
+        /// <param name = "Parameter">The type of the parameter to the function.</param>
+        /// <param name = "Return">The return type of the function.</param>
         public sealed partial record Func(Type Parameter, Type Return) : Type;
+        /// <summary>
+        /// A tuple type.
+        /// </summary>
+        /// <param name = "Types">The types of the values in the tuple.</param>
         public sealed partial record Tuple(ImmutableArray<Type> Types) : Type;
+        /// <summary>
+        /// A list type.
+        /// </summary>
+        /// <param name = "Containing">The type of the elements in the list.</param>
         public sealed partial record List(Type Containing) : Type;
+        /// <summary>
+        /// A type parameter.
+        /// </summary>
+        /// <param name = "Name">The name of the type parameter.</param>
         public sealed partial record Var(string Name) : Type;
     }
 }

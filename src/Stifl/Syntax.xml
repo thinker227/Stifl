@@ -3,79 +3,100 @@
 <!-- Definitions for syntax nodes -->
 
 <Root Name="Ast">
+
+  A node in an abstract syntax tree.
   
   <Node Name="Unit">
-    <List Name="Decls" Type="Decl"/>
+    A single unit of syntax, equivalent to a file.
+    <List Name="Decls" Type="Decl">The declarations in the unit.</List>
   </Node>
 
   <Variant Name="Decl">
+    A declaration.
     <Node Name="Binding">
-      <Value Name="Name" Type="string" Primitive="true"/>
-      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
-      <Value Name="Expression" Type="Expr"/>
+      A binding declaration.
+      <Value Name="Name" Type="string" Primitive="true">The name of the binding.</Value>
+      <Value Name="AnnotatedType" Type="Type" Optional="true">The annotated type of the binding.</Value>
+      <Value Name="Expression" Type="Expr">The body expression of the binding.</Value>
     </Node>
   </Variant>
 
   <Variant Name="Expr">
-    <Node Name="Unit"/>
-    <Node Name="UndefinedLiteral"/>
+    An expression.
+    <Node Name="Unit">A unit literal.</Node>
+    <Node Name="UndefinedLiteral">An undefined literal.</Node>
     <Node Name="BoolLiteral">
-      <Value Name="Value" Type="bool" Primitive="true"/>
+      A boolean literal.
+      <Value Name="Value" Type="bool" Primitive="true">The value of the literal.</Value>
     </Node>
     <Node Name="IntLiteral">
-      <Value Name="Value" Type="int" Primitive="true"/>
+      A 32-bit integer literal.
+      <Value Name="Value" Type="int" Primitive="true">The value of the literal.</Value>
     </Node>
     <Node Name="Identifier">
-      <Value Name="Name" Type="string" Primitive="true"/>
+      An identifier referencing a symbol.
+      <Value Name="Name" Type="string" Primitive="true">The name of the symbol the identifier is referencing.</Value>
     </Node>
     <Node Name="Func">
-      <Value Name="Parameter" Type="string" Primitive="true"/>
-      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
-      <Value Name="Body" Type="Expr"/>
+      A function expression.
+      <Value Name="Parameter" Type="string" Primitive="true">The name of the function's parameter symbol.</Value>
+      <Value Name="AnnotatedType" Type="Type" Optional="true">The annotated type of the function.</Value>
+      <Value Name="Body" Type="Expr">The body expression of the function.</Value>
     </Node>
     <Node Name="If">
-      <Value Name="Condition" Type="Expr"/>
-      <Value Name="IfTrue" Type="Expr"/>
-      <Value Name="IfFalse" Type="Expr"/>
+      An if-else-then expression.
+      <Value Name="Condition" Type="Expr">The if condition.</Value>
+      <Value Name="IfTrue" Type="Expr">The expression returned if the condition is true.</Value>
+      <Value Name="IfFalse" Type="Expr">The expression returned if the condition if false.</Value>
     </Node>
     <Node Name="Call">
-      <Value Name="Function" Type="Expr"/>
-      <Value Name="Argument" Type="Expr"/>
+      A call expression.
+      <Value Name="Function" Type="Expr">The expression evaluating to the function to call.</Value>
+      <Value Name="Argument" Type="Expr">The argument to call the function with.</Value>
     </Node>
     <Node Name="Let">
-      <Value Name="Name" Type="string" Primitive="true"/>
-      <Value Name="AnnotatedType" Type="Type" Optional="true"/>
-      <Value Name="Value" Type="Expr"/>
-      <Value Name="Expression" Type="Expr"/>
+      A let-in expression.
+      <Value Name="Name" Type="string" Primitive="true">The name of the declared variable.</Value>
+      <Value Name="AnnotatedType" Type="Type" Optional="true">The annotated type of the variable.</Value>
+      <Value Name="Value" Type="Expr">The value of the variable.</Value>
+      <Value Name="Expression" Type="Expr">The expression to evaluate with the variable in scope.</Value>
     </Node>
     <Node Name="Tuple">
-      <List Name="Values" Type="Expr"/>
+      A tuple expression.
+      <List Name="Values" Type="Expr">The values in the tuple.</List>
     </Node>
     <Node Name="List">
-      <List Name="Values" Type="Expr"/>
+      A list expression.
+      <List Name="Values" Type="Expr">The values in the list.</List>
     </Node>
     <Node Name="Annotated">
-      <Value Name="Expression" Type="Expr"/>
-      <Value Name="Annotation" Type="Type"/>
+      A type annotation expression.
+      <Value Name="Expression" Type="Expr">The annotated expression.</Value>
+      <Value Name="Annotation" Type="Type">The type the expression is annotated with</Value>
     </Node>
   </Variant>
 
   <Variant Name="Type">
-    <Node Name="Unit"/>
-    <Node Name="Int"/>
-    <Node Name="Bool"/>
+    A type.
+    <Node Name="Unit">The unit type.</Node>
+    <Node Name="Int">The 32-bit integer type.</Node>
+    <Node Name="Bool">The boolean type.</Node>
     <Node Name="Func">
-      <Value Name="Parameter" Type="Type"/>
-      <Value Name="Return" Type="Type"/>
+      A function type.
+      <Value Name="Parameter" Type="Type">The type of the parameter to the function.</Value>
+      <Value Name="Return" Type="Type">The return type of the function.</Value>
     </Node>
     <Node Name="Tuple">
-      <List Name="Types" Type="Type"/>
+      A tuple type.
+      <List Name="Types" Type="Type">The types of the values in the tuple.</List>
     </Node>
     <Node Name="List">
-      <Value Name="Containing" Type="Type"/>
+      A list type.
+      <Value Name="Containing" Type="Type">The type of the elements in the list.</Value>
     </Node>
     <Node Name="Var">
-      <Value Name="Name" Type="string" Primitive="true"/>
+      A type parameter.
+      <Value Name="Name" Type="string" Primitive="true">The name of the type parameter.</Value>
     </Node>
   </Variant>
   

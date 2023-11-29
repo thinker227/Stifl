@@ -7,6 +7,9 @@ public class Node
 {
     [XmlAttribute("Name")]
     public required string name;
+
+    [XmlText]
+    public string? docs = null;
     
     [XmlElement("Value", typeof(Value))]
     [XmlElement("List", typeof(List))]
@@ -39,6 +42,9 @@ public abstract class Member
 
     [XmlAttribute("Primitive")]
     public string primitive = "false";
+
+    [XmlText]
+    public string? docs = null;
 
     [UsedImplicitly]
     public bool IsOptional => optional == "true";
