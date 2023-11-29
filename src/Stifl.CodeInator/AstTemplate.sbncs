@@ -3,7 +3,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 {{ func render_node(node, parent, parent_members) }}
 
-    public {{ if node.is_variant }} abstract {{ else }} sealed {{ end }} record {{ node.name }}
+    public {{ if node.is_variant }} abstract {{ else }} sealed {{ end }} partial record {{ node.name }}
     {{ $members = array.add_range parent_members node.members }}
     {{ if $members.size != 0 }}
         (
