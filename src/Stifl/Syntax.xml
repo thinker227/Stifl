@@ -45,6 +45,7 @@
     <Node Name="Let">
       <Value Name="Name" Type="string" Primitive="true"/>
       <Value Name="AnnotatedType" Type="Type" Optional="true"/>
+      <Value Name="Value" Type="Expr"/>
       <Value Name="Expression" Type="Expr"/>
     </Node>
     <Node Name="Tuple">
@@ -68,7 +69,7 @@
       <Value Name="Return" Type="Type"/>
     </Node>
     <Node Name="Tuple">
-      <List Name="Values" Type="Type"/>
+      <List Name="Types" Type="Type"/>
     </Node>
     <Node Name="List">
       <Value Name="Containing" Type="Type"/>
