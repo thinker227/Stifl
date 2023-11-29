@@ -201,7 +201,7 @@ public abstract class {{ root.name }}Visitor<T> where T : notnull
     public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }} => nodes.Select(VisitNode).ToList()!;
 
     [return: NotNullIfNotNull(nameof(node))]
-    public virtual T? VisitNode({{ root.name }}? node)
+    public T? VisitNode({{ root.name }}? node)
     {
         if (node is null) return default;
 
@@ -230,7 +230,7 @@ public abstract class {{ root.name }}Visitor
         foreach (var x in nodes) VisitNode(x);
     }
 
-    public virtual void VisitNode({{ root.name }}? node)
+    public void VisitNode({{ root.name }}? node)
     {
         if (node is null) return;
 

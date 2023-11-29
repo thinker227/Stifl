@@ -85,7 +85,7 @@ public abstract class AstVisitor<T>
     public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes)
         where TNode : Ast => nodes.Select(VisitNode).ToList()!;
     [return: NotNullIfNotNull(nameof(node))]
-    public virtual T? VisitNode(Ast? node)
+    public T? VisitNode(Ast? node)
     {
         if (node is null)
             return default;
@@ -326,7 +326,7 @@ public abstract class AstVisitor
             VisitNode(x);
     }
 
-    public virtual void VisitNode(Ast? node)
+    public void VisitNode(Ast? node)
     {
         if (node is null)
             return;
