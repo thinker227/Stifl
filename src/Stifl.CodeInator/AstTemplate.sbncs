@@ -50,6 +50,22 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 
 
+{{ func render_member_visits(members) }}
+
+    {{ for member in members }}
+        {{ if !member.is_primitive }}
+            {{ if member.is_list }}
+                VisitMany(node.{{ member.name }});
+            {{ else }}
+                VisitNode(node.{{ member.name }});
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
+{{ end }}
+
+
+
 {{ func render_visitor_method(node, parents) }}
 
     {{ $type_name = type_name node parents }}
@@ -71,15 +87,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
         {{ end }}
     {{ else }}
         {
-        {{ for member in node.members }}
-            {{ if !member.is_primitive }}
-                {{ if member.is_list }}
-                    VisitMany(node.{{ member.name }});
-                {{ else }}
-                    VisitNode(node.{{ member.name }});
-                {{ end }}
-            {{ end }}
-        {{ end }}
+        {{ render_member_visits node.members }}
         return Default;
         }
     {{ end }}
@@ -113,15 +121,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
         {{ end }}
     {{ else }}
         {
-        {{ for member in node.members }}
-            {{ if !member.is_primitive }}
-                {{ if member.is_list }}
-                    VisitMany(node.{{ member.name }});
-                {{ else }}
-                    VisitNode(node.{{ member.name }});
-                {{ end }}
-            {{ end }}
-        {{ end }}
+        {{ render_member_visits node.members }}
         }
     {{ end }}
 
