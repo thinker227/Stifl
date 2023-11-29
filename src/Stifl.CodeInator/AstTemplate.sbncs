@@ -73,7 +73,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
         ],
     {{ else }}
         {{ for child in node.nodes }}
-            {{ render_children_getter child (array.add parents child) (array.add_range parent_members node.members) }}
+            {{ render_children_getter child (array.add parents node) (array.add_range parent_members node.members) }}
         {{ end }}
     {{ end }}
 
