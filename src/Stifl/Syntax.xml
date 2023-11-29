@@ -43,7 +43,7 @@
       <Value Name="Argument" Type="Expr"/>
     </Node>
     <Node Name="Let">
-      <Value Name="Name" Type="string"/>
+      <Value Name="Name" Type="string" Primitive="true"/>
       <Value Name="AnnotatedType" Type="Type" Optional="true"/>
       <Value Name="Expression" Type="Expr"/>
     </Node>
