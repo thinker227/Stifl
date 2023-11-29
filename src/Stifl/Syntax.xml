@@ -2,16 +2,6 @@
 
 <!-- Definitions for syntax nodes -->
 
-<!-- <Root Name="Foo">
-  <Value Name="x" Type="int"/>
-  <Variant Name="Bar">
-    <Value Name="y" Type="string"/>
-    <Node Name="Baz">
-      <Value Name="z" Type="bool"/>
-    </Node>
-  </Variant>
-</Root> -->
-
 <Root Name="Ast">
   
   <Node Name="Unit">
