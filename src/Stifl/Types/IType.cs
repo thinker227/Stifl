@@ -36,23 +36,24 @@ public static class TypeExtensions
     /// This method does not guarantee all type variables are removed,
     /// only type variables with substitutions.
     /// </remarks>
-    public static IType Purify(this IType type) =>
-        type.Substitute<TypeVariable>(x => x.Substitution);
+    public static IType Purify(this IType type) => type
+        .Substitute<TypeVariable>(x => x.Substitution)
+        .Substitute<GeneralizationBuilder>(x => new TypeGeneralization(x.ForallTypes, x.Containing));
 
     /// <summary>
     /// Removes generalizations and replaces all type parameters in the type with new type variables.
     /// </summary>
     /// <param name="type">The type to instantiate.</param>
     /// <param name="var">A function to generate new type variables from type parameters.</param>
-    public static IType Instantiate(this IType type, Func<ITypeParameter, TypeVariable> var) =>
-        type.Substitute<IType>(
-            x => x is TypeGeneralization or GeneralizationBuilder,
-            x => x switch
-            {
-                TypeGeneralization g => g.Containing,
-                GeneralizationBuilder g => g.Containing,
-                _ => throw new UnreachableException()
-            })
+    public static IType Instantiate(this IType type, Func<ITypeParameter, TypeVariable> var) => type
+            .Substitute<IType>(
+                x => x is TypeGeneralization or GeneralizationBuilder,
+                x => x switch
+                {
+                    TypeGeneralization g => g.Containing,
+                    GeneralizationBuilder g => g.Containing,
+                    _ => throw new UnreachableException()
+                })
             .Substitute(var);
     
     /// <summary>

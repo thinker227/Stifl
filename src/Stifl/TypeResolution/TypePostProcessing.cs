@@ -50,14 +50,14 @@ file sealed class BindingProcessor(
     private readonly Dictionary<TypeVariable, InferredTypeParameter> parameters = [];
 
     public IType Process(AstOrSymbol x) => annotations[x]
-        .Purify()
-        .Substitute<TypeVariable>(var =>
+        .Substitute<TypeVariable>(var => !var.HasSustitution, var =>
             parameters.GetOrAdd(var, () =>
             {
                 var param = new InferredTypeParameter();
                 generalization.ForallTypes.Add(param);
                 return param;
-            }));
+            }))
+        .Purify();
 
     public IType Node(Ast node) => Process(node);
 

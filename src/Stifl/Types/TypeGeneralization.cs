@@ -14,7 +14,7 @@ public sealed record TypeGeneralization(
 {
     public IType Substitute<T>(Func<T, bool> predicate, Func<T, IType> sub) where T : IType =>
         TypeExtensions.Sub(this, predicate, sub, x => new TypeGeneralization(
-            x.ForallTypes, x.Substitute(predicate, sub)));
+            x.ForallTypes, x.Containing.Substitute(predicate, sub)));
 
     public IEnumerable<IType> Children() => [..ForallTypes, Containing];
 
