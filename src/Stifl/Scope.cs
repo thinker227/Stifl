@@ -138,15 +138,13 @@ public static class Scopes
     }
 }
 
-file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
+file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor
 {
     private readonly Stack<MutableScope> scopeStack = new([global]);
     public readonly Dictionary<Ast, Scope> scopes = new(ReferenceEqualityComparer.Instance);
     public readonly Dictionary<Ast, ISymbol> symbols = new(ReferenceEqualityComparer.Instance);
 
     private MutableScope Current => scopeStack.Peek();
-
-    protected override Unit Default => Unit.Value;
 
     private static MutableScope FindParentFunctionOrGlobalScope(MutableScope scope) =>
         scope.DeclaringNode is Ast.Decl.Binding
@@ -182,45 +180,39 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
 
     protected override void BeforeVisit(Ast node) => scopes[node] = Current.Scope;
 
-    public override Unit VisitBindingDecl(Ast.Decl.Binding node)
+    public override void VisitBindingDecl(Ast.Decl.Binding node)
     {
         Register(new Binding(node.Name, node), node);
 
         InScope(node, () =>
         {
-            VisitNodeOrNull(node.AnnotatedType);
+            VisitNode(node.AnnotatedType);
             VisitNode(node.Expression);
         });
-
-        return Default;
     }
 
-    public override Unit VisitFuncExpr(Ast.Expr.Func node)
+    public override void VisitFuncExpr(Ast.Expr.Func node)
     {
         InScope(node, () =>
         {
-            VisitNodeOrNull(node.AnnotatedType);
+            VisitNode(node.AnnotatedType);
             Register(new Parameter(node.Parameter, node), node);
             VisitNode(node.Body);
         });
-
-        return Default;
     }
 
-    public override Unit VisitLetExpr(Ast.Expr.Let node)
+    public override void VisitLetExpr(Ast.Expr.Let node)
     {
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Value);
         InScope(node, () =>
         {
             Register(new Variable(node.Name, node), node);
             VisitNode(node.Expression);
         });
-
-        return Default;
     }
 
-    public override Unit VisitVarType(AstType.Var node)
+    public override void VisitVarType(AstType.Var node)
     {
         // Type parameter aren't declared in the same way as other symbols.
         // If a type parameter is referenced which isn't declared,
@@ -228,7 +220,5 @@ file sealed class ScopeResolutionVisitor(MutableScope global) : AstVisitor<Unit>
         if (Current.Scope.LookupTypeParameter(node.Name) is not TypeParameter symbol)
             Register(new TypeParameter(node.Name), node);
         else symbols[node] = symbol;
-        
-        return Default;
     }
 }

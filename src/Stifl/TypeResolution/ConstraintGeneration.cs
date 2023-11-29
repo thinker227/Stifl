@@ -77,12 +77,10 @@ internal static partial class ConstraintGeneration
 file sealed class ConstraintGenerationVisitor(
     TypeSet types,
     ScopeSet scopes,
-    TypeVariableInator variableInator) : AstVisitor<Unit>
+    TypeVariableInator variableInator) : AstVisitor
 {
     public readonly HashSet<Constraint> constraints = [];
     public GeneralizationBuilder? generalizationBuilder;
-
-    protected override Unit Default => Unit.Value;
 
     private IType GetType(Ast node) =>
         types[AstOrSymbol.FromT0(node)];
@@ -118,7 +116,7 @@ file sealed class ConstraintGenerationVisitor(
     private void Eq(IType variable, IType type) =>
         constraints.Add(new Constraint.Eq(variable, type));
 
-    public override Unit VisitBindingDecl(Ast.Decl.Binding node)
+    public override void VisitBindingDecl(Ast.Decl.Binding node)
     {
         // No constraints are generated for the node here
         // because they have already been generated ahead of being visited.
@@ -136,37 +134,31 @@ file sealed class ConstraintGenerationVisitor(
         // a generalization builder already registered.
         generalizationBuilder ??= (GeneralizationBuilder)GetType(node);
 
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
-
-        return Default;
     }
 
-    public override Unit VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node)
+    public override void VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node)
     {
         Eq(node, WellKnownType.Bool);
-        return Default;
     }
 
-    public override Unit VisitIntLiteralExpr(Ast.Expr.IntLiteral node)
+    public override void VisitIntLiteralExpr(Ast.Expr.IntLiteral node)
     {
         Eq(node, WellKnownType.Int);
-        return Default;
     }
 
-    public override Unit VisitUnitExpr(Ast.Expr.Unit node)
+    public override void VisitUnitExpr(Ast.Expr.Unit node)
     {
         Eq(node, WellKnownType.Unit);
-        return Default;
     }
 
-    public override Unit VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node)
+    public override void VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node)
     {
         Eq(node, WellKnownType.Bottom);
-        return Default;
     }
 
-    public override Unit VisitIdentifierExpr(Ast.Expr.Identifier node)
+    public override void VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
         var symbol = scopes[node].Lookup(node.Name)
             ?? throw new InvalidOperationException($"{node.Name} isn't declared");
@@ -184,11 +176,9 @@ file sealed class ConstraintGenerationVisitor(
         };
 
         Eq(node, type);
-
-        return Default;
     }
 
-    public override Unit VisitFuncExpr(Ast.Expr.Func node)
+    public override void VisitFuncExpr(Ast.Expr.Func node)
     {
         var parameterSymbol = scopes[node.Body].Lookup(node.Parameter)
             ?? throw new InvalidOperationException($"{node.Parameter} isn't declared");
@@ -207,13 +197,11 @@ file sealed class ConstraintGenerationVisitor(
             Eq(parameter, type);
         }
 
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Body);
-
-        return Default;
     }
 
-    public override Unit VisitIfExpr(Ast.Expr.If node)
+    public override void VisitIfExpr(Ast.Expr.If node)
     {
         Eq(node.Condition, WellKnownType.Bool);
         Eq(node.IfTrue, node.IfFalse);
@@ -222,11 +210,9 @@ file sealed class ConstraintGenerationVisitor(
         VisitNode(node.Condition);
         VisitNode(node.IfTrue);
         VisitNode(node.IfFalse);
-
-        return Default;
     }
 
-    public override Unit VisitCallExpr(Ast.Expr.Call node)
+    public override void VisitCallExpr(Ast.Expr.Call node)
     {
         var argument = GetType(node.Argument);
         var @return = GetType(node);
@@ -236,11 +222,9 @@ file sealed class ConstraintGenerationVisitor(
 
         VisitNode(node.Function);
         VisitNode(node.Argument);
-
-        return Default;
     }
 
-    public override Unit VisitLetExpr(Ast.Expr.Let node)
+    public override void VisitLetExpr(Ast.Expr.Let node)
     {
         var symbol = scopes[node.Expression].Lookup(node.Name)
             ?? throw new InvalidOperationException($"{node.Name} isn't declared");
@@ -259,11 +243,9 @@ file sealed class ConstraintGenerationVisitor(
 
         VisitNode(node.Value);
         VisitNode(node.Expression);
-
-        return Default;
     }
 
-    public override Unit VisitTupleExpr(Ast.Expr.Tuple node)
+    public override void VisitTupleExpr(Ast.Expr.Tuple node)
     {
         var types = node.Values
             .Select(GetType)
@@ -273,12 +255,10 @@ file sealed class ConstraintGenerationVisitor(
 
         Eq(node, type);
 
-        VisitMany(node.Values).Enumerate();
-
-        return Default;
+        VisitMany(node.Values);
     }
 
-    public override Unit VisitListExpr(Ast.Expr.List node)
+    public override void VisitListExpr(Ast.Expr.List node)
     {
         var containing = variableInator.Next();
 
@@ -292,12 +272,10 @@ file sealed class ConstraintGenerationVisitor(
 
         Eq(node, type);
 
-        VisitMany(node.Values).Enumerate();
-
-        return Default;
+        VisitMany(node.Values);
     }
 
-    public override Unit VisitAnnotatedExpr(Ast.Expr.Annotated node)
+    public override void VisitAnnotatedExpr(Ast.Expr.Annotated node)
     {
         var annotated = ToType(node.Annotation);
 
@@ -306,15 +284,11 @@ file sealed class ConstraintGenerationVisitor(
 
         VisitNode(node.Expression);
         VisitNode(node.Annotation);
-
-        return Default;
     }
 
-    public override Unit VisitVarType(AstType.Var node)
+    public override void VisitVarType(AstType.Var node)
     {
         var symbol = (TypeParameter)ToType(node);
         generalizationBuilder?.ForallTypes.Add(symbol);
-
-        return Default;
     }
 }
