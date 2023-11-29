@@ -74,13 +74,18 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
     public T {{ $method_name }}({{ $type_name }} node)
     {{ if node.is_variant }}
-        => node switch
+        {
+        {{ render_member_visits node.members }}
+
+        switch (node)
         {
         {{ for child in node.nodes }}
-            {{ type_name child $new_parents }} x => {{ method_name child $new_parents }}(x),
+            case {{ type_name child $new_parents }} x:
+            return {{ method_name child $new_parents }}(x);
         {{ end }}
-        _ => throw new UnreachableException()
-        };
+        default: throw new UnreachableException();
+        }
+        }
 
         {{ for child in node.nodes }}
             {{ render_visitor_method child $new_parents }}
@@ -105,6 +110,8 @@ the template therefore doesn't have to worry about whitespace. ## -}}
     public virtual void {{ $method_name }}({{ $type_name }} node)
     {{ if node.is_variant }}
         {
+        {{ render_member_visits node.members }}
+
         switch (node)
         {
         {{ for child in node.nodes }}
