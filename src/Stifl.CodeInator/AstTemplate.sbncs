@@ -92,7 +92,9 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 namespace Stifl;
 
-{{ root.name }}
+#nullable enable
+
+#pragma warning disable CS0108
 
 {{ render_node root null [] }}
 
