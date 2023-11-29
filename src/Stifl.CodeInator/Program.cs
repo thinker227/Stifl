@@ -5,28 +5,37 @@ using Stifl.CodeInator;
 
 var cmd = new RootCommand();
 
-var inputPathArg = new Argument<FileInfo>()
+var inputFileArg = new Argument<FileInfo>()
 {
-    Name = "input-path",
+    Name = "input-file",
     Description = "Path to the input file",
 };
-inputPathArg.ExistingOnly();
-cmd.AddArgument(inputPathArg);
+inputFileArg.ExistingOnly();
+cmd.AddArgument(inputFileArg);
 
-var outputPathArg = new Argument<FileInfo>()
+var projectFileArg = new Argument<FileInfo>()
 {
-    Name = "output-path",
-    Description = "Path to the output file",
+    Name = "project-file",
+    Description = "Path to the project file",
 };
-outputPathArg.LegalFilePathsOnly();
-cmd.AddArgument(outputPathArg);
+projectFileArg.LegalFilePathsOnly();
+cmd.AddArgument(projectFileArg);
 
-cmd.SetHandler(ctx =>
+var fileNameArg = new Argument<string>()
 {
-    var inputPath = ctx.ParseResult.GetValueForArgument(inputPathArg);
-    var outputPath = ctx.ParseResult.GetValueForArgument(outputPathArg);
+    Name = "file-name",
+    Description = "The file name of the generated file"
+};
+fileNameArg.LegalFileNamesOnly();
+cmd.AddArgument(fileNameArg);
+
+cmd.SetHandler(async ctx =>
+{
+    var inputFile = ctx.ParseResult.GetValueForArgument(inputFileArg);
+    var projectPath = ctx.ParseResult.GetValueForArgument(projectFileArg);
+    var fileName = ctx.ParseResult.GetValueForArgument(fileNameArg);
     
-    ctx.ExitCode = App.Run(inputPath, outputPath);
+    ctx.ExitCode = await App.Run(inputFile, projectPath, fileName);
 });
 
 var builder = new CommandLineBuilder(cmd);

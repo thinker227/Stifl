@@ -1,9 +1,10 @@
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.MSBuild;
 using OneOf;
 using Scriban;
 using Scriban.Runtime;
@@ -14,10 +15,10 @@ public static class App
 {
     private const string ResourceLocation = "Stifl.CodeInator.AstTemplate.sbncs";
     
-    public static int Run(FileInfo inputPath, FileInfo outputPath)
+    public static async Task<int> Run(FileInfo inputFile, FileInfo projectFile, string fileName)
     {
-        Console.WriteLine($"Input file: {inputPath.FullName}");
-        var modelOrException = GetModel(inputPath);
+        Console.WriteLine($"Reading input XML file {inputFile.FullName}");
+        var modelOrException = GetModel(inputFile);
 
         if (modelOrException.TryPickT1(out var exception, out var model))
         {
@@ -28,11 +29,26 @@ public static class App
         var templateStr = ManifestResourceHelper.ReadResource(ResourceLocation);
         var template = Template.Parse(templateStr);
 
+        Console.WriteLine("Rendering Scriban template");
         var text = Render(template, model);
 
-        File.WriteAllText(outputPath.FullName, text);
-        Console.WriteLine($"Written to {outputPath.FullName}");
-        
+        Console.WriteLine("Registering MSBuild locator");
+        MSBuildLocator.RegisterDefaults();
+
+        Console.WriteLine($"Opening project {projectFile.FullName}");
+        var workspace = MSBuildWorkspace.Create();
+        var project = await workspace.OpenProjectAsync(projectFile.FullName);
+        var document = await CreateFormattedDocument(project, text, fileName);
+
+        var success = workspace.TryApplyChanges(document.Project.Solution);
+
+        if (!success)
+        {
+            Console.WriteLine($"Failed to apply changes to project");
+            return 1;
+        }
+
+        Console.WriteLine($"Wrote to document {fileName}");
         return 0;
     }
 
@@ -60,11 +76,30 @@ public static class App
         scriptObject.Import("root", () => model);
         context.PushGlobal(scriptObject);
         
-        var text = template.Render(context);
-        
-        var root = CSharpSyntaxTree.ParseText(text).GetRoot();
-        return root
-            .NormalizeWhitespace(indentation: "    ", eol: "\n")
-            .ToString();
+        return template.Render(context);
+    }
+
+    private static async Task<Document> CreateFormattedDocument(Project project, string text, string documentName)
+    {
+        Console.WriteLine("Parsing and formatting text");
+        var tree = CSharpSyntaxTree.ParseText(text);
+        var formattedRoot = tree.GetRoot().NormalizeWhitespace();
+
+        Document document;
+        if (project.Documents.FirstOrDefault(doc => doc.Name == documentName) is Document existing)
+        {
+            Console.WriteLine($"Found existing document {documentName}");
+            document = existing.WithSyntaxRoot(formattedRoot);
+        }
+        else
+        {
+            Console.WriteLine($"Creating new document {documentName}");
+            Console.WriteLine("*** Remember to clean up csproj! ***");
+            document = project.AddDocument(documentName, formattedRoot);
+        }
+
+        var formatted = await Formatter.FormatAsync(document);
+
+        return formatted;
     }
 }
