@@ -73,9 +73,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
         {
         {{ for member in node.members }}
             {{ if !member.is_primitive }}
-                {{ if member.is_optional }}
-                    VisitNodeOrNull(node.{{ member.name }});
-                {{ else if member.is_list }}
+                {{ if member.is_list }}
                     VisitMany(node.{{ member.name }});
                 {{ else }}
                     VisitNode(node.{{ member.name }});
@@ -117,9 +115,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
         {
         {{ for member in node.members }}
             {{ if !member.is_primitive }}
-                {{ if member.is_optional }}
-                    VisitNodeOrNull(node.{{ member.name }});
-                {{ else if member.is_list }}
+                {{ if member.is_list }}
                     VisitMany(node.{{ member.name }});
                 {{ else }}
                     VisitNode(node.{{ member.name }});
@@ -133,6 +129,8 @@ the template therefore doesn't have to worry about whitespace. ## -}}
 
 
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Stifl;
 
 #nullable enable
@@ -141,7 +139,7 @@ namespace Stifl;
 
 {{ render_node root null [] }}
 
-public abstract class {{ root.name }}Visitor<T>
+public abstract class {{ root.name }}Visitor<T> where T : notnull
 {
     protected abstract T Default { get; }
 
@@ -151,12 +149,13 @@ public abstract class {{ root.name }}Visitor<T>
 
     protected virtual bool Filter({{ root.name }} node) => true;
 
-    public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }} => nodes.Select(VisitNode).ToList();
+    public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }} => nodes.Select(VisitNode).ToList()!;
 
-    public T VisitNodeOrNull({{ root.name }}? node) => node is not null ? VisitNode(node) : Default;
-
-    public virtual T VisitNode({{ root.name }} node)
+    [return: NotNullIfNotNull(nameof(node))]
+    public virtual T? VisitNode({{ root.name }}? node)
     {
+        if (node is null) return default;
+
         if (!Filter(node)) return Default;
 
         BeforeVisit(node);
@@ -182,13 +181,10 @@ public abstract class {{ root.name }}Visitor
         foreach (var x in nodes) VisitNode(x);
     }
 
-    public void VisitNodeOrNull({{ root.name }}? node)
+    public virtual void VisitNode({{ root.name }}? node)
     {
-        if (node is not null) VisitNode(node);
-    }
+        if (node is null) return;
 
-    public virtual void VisitNode({{ root.name }} node)
-    {
         if (!Filter(node)) return;
 
         BeforeVisit(node);
