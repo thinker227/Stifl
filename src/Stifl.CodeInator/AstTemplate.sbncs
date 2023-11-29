@@ -103,6 +103,11 @@ the template therefore doesn't have to worry about whitespace. ## -}}
     {{ $method_name = method_name node parents }}
     {{ $new_parents = array.add parents node }}
 
+    /// <summary>
+    /// Visits a node of type <see cref="{{ $type_name }}"/>.
+    /// </summary>
+    /// <param name="node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T {{ $method_name }}({{ $type_name }} node)
     {{ if node.is_variant }}
         {
@@ -138,6 +143,10 @@ the template therefore doesn't have to worry about whitespace. ## -}}
     {{ $method_name = method_name node parents }}
     {{ $new_parents = array.add parents node }}
 
+    /// <summary>
+    /// Visits a node of type <see cref="{{ $type_name }}"/>.
+    /// </summary>
+    /// <param name="node">The node being visited.</param>
     public virtual void {{ $method_name }}({{ $type_name }} node)
     {{ if node.is_variant }}
         {
@@ -188,18 +197,48 @@ partial record {{ root.name }} : INode<{{ root.name }}>
     };
 }
 
+/// <summary>
+/// Visits AST nodes.
+/// </summary>
+/// <typeparam name="T">The type which the visitor returns.</typeparam>
 public abstract class {{ root.name }}Visitor<T> where T : notnull
 {
+    /// <summary>
+    /// The default value of a visit.
+    /// </summary>
     protected abstract T Default { get; }
 
+    /// <summary>
+    /// Called before a node is visited.
+    /// </summary>
+    /// <param name="node">The node being visited.</param>
     protected virtual void BeforeVisit({{ root.name }} node) {}
 
+    /// <summary>
+    /// Called after a node has been visited.
+    /// </summary>
+    /// <param name="node">The node being visited.</param>
     protected virtual void AfterVisit({{ root.name }} node) {}
 
+    /// <summary>
+    /// Filters nodes which should be visited.
+    /// </summary>
+    /// <param name="node">The node to filter.</param>
+    /// <returns>Whether the node and its children should be visited.</returns>
     protected virtual bool Filter({{ root.name }} node) => true;
 
+    /// <summary>
+    /// Visits many nodes and returns a sequence of return values.
+    /// </summary>
+    /// <typeparam name="TNode">The type of the nodes to visit.</typeparam>
+    /// <param name="nodes">The nodes to visit.</param>
     public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }} => nodes.Select(VisitNode).ToList()!;
 
+    /// <summary>
+    /// Visits a node.
+    /// </summary>
+    /// <param name="node">The node to visit.</param>
+    /// <returns>The return value of the visit.</returns>
     [return: NotNullIfNotNull(nameof(node))]
     public T? VisitNode({{ root.name }}? node)
     {
@@ -217,19 +256,44 @@ public abstract class {{ root.name }}Visitor<T> where T : notnull
     {{ render_visitor_method root [] }}
 }
 
+/// <summary>
+/// Visits AST nodes.
+/// </summary>
 public abstract class {{ root.name }}Visitor
 {
+    /// <summary>
+    /// Called before a node is visited.
+    /// </summary>
+    /// <param name="node">The node being visited.</param>
     protected virtual void BeforeVisit({{ root.name }} node) {}
 
+    /// <summary>
+    /// Called after a node has been visited.
+    /// </summary>
+    /// <param name="node">The node being visited.</param>
     protected virtual void AfterVisit({{ root.name }} node) {}
 
+    /// <summary>
+    /// Filters nodes which should be visited.
+    /// </summary>
+    /// <param name="node">The node to filter.</param>
+    /// <returns>Whether the node and its children should be visited.</returns>
     protected virtual bool Filter({{ root.name }} node) => true;
 
+    /// <summary>
+    /// Visits many nodes and returns a sequence of return values.
+    /// </summary>
+    /// <typeparam name="TNode">The type of the nodes to visit.</typeparam>
+    /// <param name="nodes">The nodes to visit.</param>
     public void VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{ root.name }}
     {
         foreach (var x in nodes) VisitNode(x);
     }
 
+    /// <summary>
+    /// Visits a node.
+    /// </summary>
+    /// <param name="node">The node to visit.</param>
     public void VisitNode({{ root.name }}? node)
     {
         if (node is null) return;

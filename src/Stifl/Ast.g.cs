@@ -68,22 +68,52 @@ partial record Ast : INode<Ast>
         _ => throw new UnreachableException()};
 }
 
+/// <summary>
+/// Visits AST nodes.
+/// </summary>
+/// <typeparam name = "T">The type which the visitor returns.</typeparam>
 public abstract class AstVisitor<T>
     where T : notnull
 {
+    /// <summary>
+    /// The default value of a visit.
+    /// </summary>
     protected abstract T Default { get; }
 
+    /// <summary>
+    /// Called before a node is visited.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     protected virtual void BeforeVisit(Ast node)
     {
     }
 
+    /// <summary>
+    /// Called after a node has been visited.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     protected virtual void AfterVisit(Ast node)
     {
     }
 
+    /// <summary>
+    /// Filters nodes which should be visited.
+    /// </summary>
+    /// <param name = "node">The node to filter.</param>
+    /// <returns>Whether the node and its children should be visited.</returns>
     protected virtual bool Filter(Ast node) => true;
+    /// <summary>
+    /// Visits many nodes and returns a sequence of return values.
+    /// </summary>
+    /// <typeparam name = "TNode">The type of the nodes to visit.</typeparam>
+    /// <param name = "nodes">The nodes to visit.</param>
     public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes)
         where TNode : Ast => nodes.Select(VisitNode).ToList()!;
+    /// <summary>
+    /// Visits a node.
+    /// </summary>
+    /// <param name = "node">The node to visit.</param>
+    /// <returns>The return value of the visit.</returns>
     [return: NotNullIfNotNull(nameof(node))]
     public T? VisitNode(Ast? node)
     {
@@ -97,6 +127,11 @@ public abstract class AstVisitor<T>
         return x;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitAst(Ast node)
     {
         switch (node)
@@ -114,12 +149,22 @@ public abstract class AstVisitor<T>
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitUnit(Ast.Unit node)
     {
         VisitMany(node.Decls);
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Decl"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitDecl(Ast.Decl node)
     {
         switch (node)
@@ -131,6 +176,11 @@ public abstract class AstVisitor<T>
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Decl.Binding"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitBindingDecl(Ast.Decl.Binding node)
     {
         VisitNode(node.AnnotatedType);
@@ -138,6 +188,11 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitExpr(Ast.Expr node)
     {
         switch (node)
@@ -171,31 +226,61 @@ public abstract class AstVisitor<T>
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitUnitExpr(Ast.Expr.Unit node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.UndefinedLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.BoolLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.IntLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitIntLiteralExpr(Ast.Expr.IntLiteral node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Identifier"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Func"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitFuncExpr(Ast.Expr.Func node)
     {
         VisitNode(node.AnnotatedType);
@@ -203,6 +288,11 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.If"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitIfExpr(Ast.Expr.If node)
     {
         VisitNode(node.Condition);
@@ -211,6 +301,11 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Call"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitCallExpr(Ast.Expr.Call node)
     {
         VisitNode(node.Function);
@@ -218,6 +313,11 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Let"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitLetExpr(Ast.Expr.Let node)
     {
         VisitNode(node.AnnotatedType);
@@ -226,18 +326,33 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Tuple"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitTupleExpr(Ast.Expr.Tuple node)
     {
         VisitMany(node.Values);
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.List"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitListExpr(Ast.Expr.List node)
     {
         VisitMany(node.Values);
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Annotated"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitAnnotatedExpr(Ast.Expr.Annotated node)
     {
         VisitNode(node.Expression);
@@ -245,6 +360,11 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitType(Ast.Type node)
     {
         switch (node)
@@ -268,21 +388,41 @@ public abstract class AstVisitor<T>
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitUnitType(Ast.Type.Unit node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Int"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitIntType(Ast.Type.Int node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Bool"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitBoolType(Ast.Type.Bool node)
     {
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Func"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitFuncType(Ast.Type.Func node)
     {
         VisitNode(node.Parameter);
@@ -290,35 +430,71 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Tuple"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitTupleType(Ast.Type.Tuple node)
     {
         VisitMany(node.Types);
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.List"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitListType(Ast.Type.List node)
     {
         VisitNode(node.Containing);
         return Default;
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Var"/>.
+    /// </summary>
+    /// <param name = "node">The node which is being visited.</param>
+    /// <returns>The return value of the visit.</returns>
     public virtual T VisitVarType(Ast.Type.Var node)
     {
         return Default;
     }
 }
 
+/// <summary>
+/// Visits AST nodes.
+/// </summary>
 public abstract class AstVisitor
 {
+    /// <summary>
+    /// Called before a node is visited.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     protected virtual void BeforeVisit(Ast node)
     {
     }
 
+    /// <summary>
+    /// Called after a node has been visited.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     protected virtual void AfterVisit(Ast node)
     {
     }
 
+    /// <summary>
+    /// Filters nodes which should be visited.
+    /// </summary>
+    /// <param name = "node">The node to filter.</param>
+    /// <returns>Whether the node and its children should be visited.</returns>
     protected virtual bool Filter(Ast node) => true;
+    /// <summary>
+    /// Visits many nodes and returns a sequence of return values.
+    /// </summary>
+    /// <typeparam name = "TNode">The type of the nodes to visit.</typeparam>
+    /// <param name = "nodes">The nodes to visit.</param>
     public void VisitMany<TNode>(IEnumerable<TNode> nodes)
         where TNode : Ast
     {
@@ -326,6 +502,10 @@ public abstract class AstVisitor
             VisitNode(x);
     }
 
+    /// <summary>
+    /// Visits a node.
+    /// </summary>
+    /// <param name = "node">The node to visit.</param>
     public void VisitNode(Ast? node)
     {
         if (node is null)
@@ -337,6 +517,10 @@ public abstract class AstVisitor
         AfterVisit(node);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitAst(Ast node)
     {
         switch (node)
@@ -358,11 +542,19 @@ public abstract class AstVisitor
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitUnit(Ast.Unit node)
     {
         VisitMany(node.Decls);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Decl"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitDecl(Ast.Decl node)
     {
         switch (node)
@@ -375,12 +567,20 @@ public abstract class AstVisitor
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Decl.Binding"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitBindingDecl(Ast.Decl.Binding node)
     {
         VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitExpr(Ast.Expr node)
     {
         switch (node)
@@ -426,32 +626,60 @@ public abstract class AstVisitor
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitUnitExpr(Ast.Expr.Unit node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.UndefinedLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitUndefinedLiteralExpr(Ast.Expr.UndefinedLiteral node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.BoolLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.IntLiteral"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitIntLiteralExpr(Ast.Expr.IntLiteral node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Identifier"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Func"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitFuncExpr(Ast.Expr.Func node)
     {
         VisitNode(node.AnnotatedType);
         VisitNode(node.Body);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.If"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitIfExpr(Ast.Expr.If node)
     {
         VisitNode(node.Condition);
@@ -459,12 +687,20 @@ public abstract class AstVisitor
         VisitNode(node.IfFalse);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Call"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitCallExpr(Ast.Expr.Call node)
     {
         VisitNode(node.Function);
         VisitNode(node.Argument);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Let"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitLetExpr(Ast.Expr.Let node)
     {
         VisitNode(node.AnnotatedType);
@@ -472,22 +708,38 @@ public abstract class AstVisitor
         VisitNode(node.Expression);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Tuple"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitTupleExpr(Ast.Expr.Tuple node)
     {
         VisitMany(node.Values);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.List"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitListExpr(Ast.Expr.List node)
     {
         VisitMany(node.Values);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Expr.Annotated"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitAnnotatedExpr(Ast.Expr.Annotated node)
     {
         VisitNode(node.Expression);
         VisitNode(node.Annotation);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitType(Ast.Type node)
     {
         switch (node)
@@ -518,34 +770,62 @@ public abstract class AstVisitor
         }
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Unit"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitUnitType(Ast.Type.Unit node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Int"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitIntType(Ast.Type.Int node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Bool"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitBoolType(Ast.Type.Bool node)
     {
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Func"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitFuncType(Ast.Type.Func node)
     {
         VisitNode(node.Parameter);
         VisitNode(node.Return);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Tuple"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitTupleType(Ast.Type.Tuple node)
     {
         VisitMany(node.Types);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.List"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitListType(Ast.Type.List node)
     {
         VisitNode(node.Containing);
     }
 
+    /// <summary>
+    /// Visits a node of type <see cref = "Ast.Type.Var"/>.
+    /// </summary>
+    /// <param name = "node">The node being visited.</param>
     public virtual void VisitVarType(Ast.Type.Var node)
     {
     }
