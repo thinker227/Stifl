@@ -72,7 +72,7 @@ the template therefore doesn't have to worry about whitespace. ## -}}
     {{ $method_name = method_name node parents }}
     {{ $new_parents = array.add parents node }}
 
-    public T {{ $method_name }}({{ $type_name }} node)
+    public virtual T {{ $method_name }}({{ $type_name }} node)
     {{ if node.is_variant }}
         {
         {{ render_member_visits node.members }}
