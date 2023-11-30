@@ -1,6 +1,5 @@
 using static Stifl.Ast;
 using Stifl.Types;
-using Unit = Pidgin.Unit;
 
 namespace Stifl.TypeResolution;
 
@@ -22,15 +21,13 @@ internal static class TypeAnnotate
     }
 }
 
-file sealed class TypeAnnotateVisitor(SymbolSet symbols, TypeVariableInator variableInator) : AstVisitor<Unit>
+file sealed class TypeAnnotateVisitor(SymbolSet symbols, TypeVariableInator variableInator) : AstVisitor
 {
     public int index = 0;
     public readonly Dictionary<AstOrSymbol, TypeVariable> annotations = new(
         new OneOfEqualityComparer<Ast, ISymbol>(
             ReferenceEqualityComparer.Instance,
             ReferenceEqualityComparer.Instance));
-
-    protected override Unit Default => Unit.Value;
 
     private void Annotate(Ast node, TypeVariable annotation) =>
         annotations[AstOrSymbol.FromT0(node)] = annotation;
@@ -45,39 +42,33 @@ file sealed class TypeAnnotateVisitor(SymbolSet symbols, TypeVariableInator vari
         Annotate(node, variableInator.Next());
     }
 
-    public override Unit VisitBindingDecl(Decl.Binding node)
+    public override void VisitBindingDecl(Decl.Binding node)
     {
         var symbol = symbols[node];
         Annotate(symbol, annotations[node]);
 
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
-
-        return Default;
     }
 
-    public override Unit VisitFuncExpr(Expr.Func node)
+    public override void VisitFuncExpr(Expr.Func node)
     {
         var symbol = symbols[node];
         Annotate(symbol, variableInator.Next());
 
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Body);
-
-        return Default;
     }
 
-    public override Unit VisitLetExpr(Expr.Let node)
+    public override void VisitLetExpr(Expr.Let node)
     {
         var symbol = symbols[node];
 
-        VisitNodeOrNull(node.AnnotatedType);
+        VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
         VisitNode(node.Value);
 
         // Has to visit node.Value before annotating the symbol.
         Annotate(symbol, annotations[node.Value]);
-
-        return Default;
     }
 }
