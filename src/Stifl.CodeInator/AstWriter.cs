@@ -101,8 +101,9 @@ public sealed partial class AstWriter
             /// </summary>
             /// <typeparam name="TNode">The type of the nodes to visit.</typeparam>
             /// <param name="nodes">The nodes to visit.</param>
-            public IReadOnlyList<T> VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{root.name}} =>
-                nodes.Select(VisitNode).ToList()!;
+            [return: NotNullIfNotNull(nameof(nodes))]
+            public IReadOnlyList<T>? VisitMany<TNode>(IEnumerable<TNode>? nodes) where TNode : {{root.name}} =>
+                nodes?.Select(VisitNode).ToList()!;
 
             /// <summary>
             /// Visits a node.
@@ -164,8 +165,10 @@ public sealed partial class AstWriter
             /// </summary>
             /// <typeparam name="TNode">The type of the nodes to visit.</typeparam>
             /// <param name="nodes">The nodes to visit.</param>
-            public void VisitMany<TNode>(IEnumerable<TNode> nodes) where TNode : {{root.name}}
+            public void VisitMany<TNode>(IEnumerable<TNode>? nodes) where TNode : {{root.name}}
             {
+                if (nodes is null) return;
+
                 foreach (var x in nodes) VisitNode(x);
             }
 
