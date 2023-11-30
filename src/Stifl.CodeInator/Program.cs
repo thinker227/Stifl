@@ -13,29 +13,20 @@ var inputFileArg = new Argument<FileInfo>()
 inputFileArg.ExistingOnly();
 cmd.AddArgument(inputFileArg);
 
-var projectFileArg = new Argument<FileInfo>()
+var outputFileArg = new Argument<FileInfo>()
 {
-    Name = "project-file",
-    Description = "Path to the project file",
+    Name = "output-file",
+    Description = "Path to the output file",
 };
-projectFileArg.LegalFilePathsOnly();
-cmd.AddArgument(projectFileArg);
+outputFileArg.LegalFilePathsOnly();
+cmd.AddArgument(outputFileArg);
 
-var fileNameArg = new Argument<string>()
-{
-    Name = "file-name",
-    Description = "The file name of the generated file"
-};
-fileNameArg.LegalFileNamesOnly();
-cmd.AddArgument(fileNameArg);
-
-cmd.SetHandler(async ctx =>
+cmd.SetHandler(ctx =>
 {
     var inputFile = ctx.ParseResult.GetValueForArgument(inputFileArg);
-    var projectPath = ctx.ParseResult.GetValueForArgument(projectFileArg);
-    var fileName = ctx.ParseResult.GetValueForArgument(fileNameArg);
+    var outputFile = ctx.ParseResult.GetValueForArgument(outputFileArg);
     
-    ctx.ExitCode = await App.Run(inputFile, projectPath, fileName);
+    ctx.ExitCode = App.Run(inputFile, outputFile);
 });
 
 var builder = new CommandLineBuilder(cmd);
