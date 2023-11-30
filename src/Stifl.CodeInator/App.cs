@@ -21,7 +21,7 @@ public static class App
         var text = Render(model);
 
         Console.WriteLine($"Writing to {outputFile.FullName}");
-        File.WriteAllText(text, outputFile.FullName);
+        File.WriteAllText(outputFile.FullName, text);
 
         return 0;
     }
