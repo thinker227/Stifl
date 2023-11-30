@@ -443,7 +443,7 @@ public sealed partial class AstWriter
             if (member.IsPrimitive) continue;
 
             writer.Write(member.IsList ? "VisitMany" : "VisitNode");
-            writer.Write("(");
+            writer.Write("(node.");
             writer.Write(member.name);
             writer.WriteLine(");");
         }
@@ -455,7 +455,7 @@ public sealed partial class AstWriter
 
         static IEnumerable<(Node, ImmutableArray<Node>)> Visit(Node node, ImmutableArray<Node> parents)
         {
-            if (node is not Variant variant) return [(node, [])];
+            if (node is not Variant variant) return [(node, parents)];
 
             var newParents = parents.Add(node);
 
