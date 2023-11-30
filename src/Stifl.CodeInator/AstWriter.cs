@@ -343,7 +343,6 @@ public sealed partial class AstWriter
             if (hasNext)
             {
                 writer.WriteLine();
-                writer.WriteLine();
             }
         }
     }

@@ -272,7 +272,6 @@ public abstract class AstVisitor<T>
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Unit"/>.
     /// </summary>
@@ -284,7 +283,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Decl"/>.
@@ -300,7 +298,6 @@ public abstract class AstVisitor<T>
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Decl.Binding"/>.
     /// </summary>
@@ -313,7 +310,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr"/>.
@@ -340,7 +336,6 @@ public abstract class AstVisitor<T>
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Unit"/>.
     /// </summary>
@@ -351,7 +346,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.UndefinedLiteral"/>.
     /// </summary>
@@ -361,7 +355,6 @@ public abstract class AstVisitor<T>
     {
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.BoolLiteral"/>.
@@ -374,7 +367,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.IntLiteral"/>.
     /// </summary>
@@ -386,7 +378,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Identifier"/>.
     /// </summary>
@@ -397,7 +388,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Func"/>.
@@ -411,7 +401,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.If"/>.
@@ -427,7 +416,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Call"/>.
     /// </summary>
@@ -440,7 +428,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Let"/>.
@@ -456,7 +443,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Tuple"/>.
     /// </summary>
@@ -468,7 +454,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.List"/>.
@@ -482,7 +467,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Annotated"/>.
     /// </summary>
@@ -495,7 +479,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type"/>.
@@ -517,7 +500,6 @@ public abstract class AstVisitor<T>
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Unit"/>.
     /// </summary>
@@ -527,7 +509,6 @@ public abstract class AstVisitor<T>
     {
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Int"/>.
@@ -539,7 +520,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Bool"/>.
     /// </summary>
@@ -549,7 +529,6 @@ public abstract class AstVisitor<T>
     {
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Func"/>.
@@ -564,7 +543,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Tuple"/>.
     /// </summary>
@@ -577,7 +555,6 @@ public abstract class AstVisitor<T>
         return Default;
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.List"/>.
     /// </summary>
@@ -589,7 +566,6 @@ public abstract class AstVisitor<T>
 
         return Default;
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Var"/>.
@@ -682,7 +658,6 @@ public abstract class AstVisitor
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Unit"/>.
     /// </summary>
@@ -691,7 +666,6 @@ public abstract class AstVisitor
     {
         VisitMany(node.Decls);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Decl"/>.
@@ -709,7 +683,6 @@ public abstract class AstVisitor
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Decl.Binding"/>.
     /// </summary>
@@ -719,7 +692,6 @@ public abstract class AstVisitor
         VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr"/>.
@@ -781,7 +753,6 @@ public abstract class AstVisitor
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Unit"/>.
     /// </summary>
@@ -789,7 +760,6 @@ public abstract class AstVisitor
     public virtual void VisitUnitExpr(Ast.Expr.Unit node)
     {
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.UndefinedLiteral"/>.
@@ -799,7 +769,6 @@ public abstract class AstVisitor
     {
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.BoolLiteral"/>.
     /// </summary>
@@ -807,7 +776,6 @@ public abstract class AstVisitor
     public virtual void VisitBoolLiteralExpr(Ast.Expr.BoolLiteral node)
     {
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.IntLiteral"/>.
@@ -817,7 +785,6 @@ public abstract class AstVisitor
     {
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Identifier"/>.
     /// </summary>
@@ -825,7 +792,6 @@ public abstract class AstVisitor
     public virtual void VisitIdentifierExpr(Ast.Expr.Identifier node)
     {
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Func"/>.
@@ -836,7 +802,6 @@ public abstract class AstVisitor
         VisitNode(node.AnnotatedType);
         VisitNode(node.Body);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.If"/>.
@@ -849,7 +814,6 @@ public abstract class AstVisitor
         VisitNode(node.IfFalse);
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Call"/>.
     /// </summary>
@@ -859,7 +823,6 @@ public abstract class AstVisitor
         VisitNode(node.Function);
         VisitNode(node.Argument);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Let"/>.
@@ -872,7 +835,6 @@ public abstract class AstVisitor
         VisitNode(node.Expression);
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Tuple"/>.
     /// </summary>
@@ -881,7 +843,6 @@ public abstract class AstVisitor
     {
         VisitMany(node.Values);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.List"/>.
@@ -892,7 +853,6 @@ public abstract class AstVisitor
         VisitMany(node.Values);
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Expr.Annotated"/>.
     /// </summary>
@@ -902,7 +862,6 @@ public abstract class AstVisitor
         VisitNode(node.Expression);
         VisitNode(node.Annotation);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type"/>.
@@ -944,7 +903,6 @@ public abstract class AstVisitor
         }
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Unit"/>.
     /// </summary>
@@ -952,7 +910,6 @@ public abstract class AstVisitor
     public virtual void VisitUnitType(Ast.Type.Unit node)
     {
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Int"/>.
@@ -962,7 +919,6 @@ public abstract class AstVisitor
     {
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Bool"/>.
     /// </summary>
@@ -970,7 +926,6 @@ public abstract class AstVisitor
     public virtual void VisitBoolType(Ast.Type.Bool node)
     {
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Func"/>.
@@ -982,7 +937,6 @@ public abstract class AstVisitor
         VisitNode(node.Return);
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Tuple"/>.
     /// </summary>
@@ -992,7 +946,6 @@ public abstract class AstVisitor
         VisitMany(node.Types);
     }
 
-
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.List"/>.
     /// </summary>
@@ -1001,7 +954,6 @@ public abstract class AstVisitor
     {
         VisitNode(node.Containing);
     }
-
 
     /// <summary>
     /// Visits a node of type <see cref="Ast.Type.Var"/>.
