@@ -1,7 +1,7 @@
 namespace Stifl.Types;
 
 /// <summary>
-/// A type parameter in a <see cref="TypeGeneralization"/>.
+/// A type parameter in a <see cref="ITypeGeneralization"/>.
 /// </summary>
 public interface ITypeParameter : IType;
 

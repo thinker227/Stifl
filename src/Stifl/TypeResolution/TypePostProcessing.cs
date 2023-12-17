@@ -23,7 +23,7 @@ internal static class TypePostProcessing
             // binding without also removing the generalization builder. The
             // containing type isn't needed here, only the forall types, so
             // the containing type doesn't need to be purified.
-            var generalization = (GeneralizationBuilder)annotations[binding].Substitution;
+            var generalization = (TypeGeneralization)annotations[binding].Substitution;
             
             var processor = new BindingProcessor(generalization, annotations);
 
@@ -44,7 +44,7 @@ internal static class TypePostProcessing
 }
 
 file sealed class BindingProcessor(
-    GeneralizationBuilder generalization,
+    TypeGeneralization generalization,
     AnnotationSet annotations)
 {
     private readonly Dictionary<TypeVariable, InferredTypeParameter> parameters = [];
