@@ -123,7 +123,7 @@ public sealed class Compilation
     /// Gets the type of a <see cref="Ast.Decl.Binding"/>.
     /// </summary>
     /// <param name="binding">The <see cref="Ast.Decl.Binding"/> to get the type of.</param>
-    public TypeGeneralization TypeOf(Ast.Decl.Binding binding) => (TypeGeneralization)types[binding];
+    public ITypeGeneralization TypeOf(Ast.Decl.Binding binding) => (ITypeGeneralization)types[binding];
 
     /// <summary>
     /// Gets the type of an <see cref="Ast.Expr"/>.
@@ -160,7 +160,7 @@ public sealed class Compilation
     /// Gets the type of a <see cref="Binding"/>.
     /// </summary>
     /// <param name="binding">The <see cref="Binding"/> to get the type of.</param>
-    public TypeGeneralization TypeOf(Binding binding) => (TypeGeneralization)types[binding];
+    public ITypeGeneralization TypeOf(Binding binding) => (ITypeGeneralization)types[binding];
 
     /// <summary>
     /// Gets the type of a <see cref="Parameter"/>.

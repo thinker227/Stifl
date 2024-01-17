@@ -46,7 +46,7 @@ internal static partial class ConstraintGeneration
             var symbol = symbols[binding];
             var expressionType = types[binding.Expression];
 
-            var generalization = new GeneralizationBuilder(expressionType);
+            var generalization = new TypeGeneralization(expressionType);
             generalizations[binding] = generalization;
             generalizations[AstOrSymbol.FromT1(symbol)] = generalization;
 
@@ -80,7 +80,7 @@ file sealed class ConstraintGenerationVisitor(
     TypeVariableInator variableInator) : AstVisitor
 {
     public readonly HashSet<Constraint> constraints = [];
-    public GeneralizationBuilder? generalizationBuilder;
+    public TypeGeneralization? generalizationBuilder;
 
     private IType GetType(Ast node) =>
         types[AstOrSymbol.FromT0(node)];
@@ -132,7 +132,7 @@ file sealed class ConstraintGenerationVisitor(
 
         // This cast *should* be safe because all bindings should have
         // a generalization builder already registered.
-        generalizationBuilder ??= (GeneralizationBuilder)GetType(node);
+        generalizationBuilder ??= (TypeGeneralization)GetType(node);
 
         VisitNode(node.AnnotatedType);
         VisitNode(node.Expression);
@@ -169,11 +169,7 @@ file sealed class ConstraintGenerationVisitor(
         // Generalization builders may occur here if the currently visited binding
         // is recursive, in which case there should be a generalization builder
         // for the binding.
-        var type = GetType(symbol) switch
-        {
-            GeneralizationBuilder g => g.Containing,
-            var t => t.Instantiate(variableInator.Instantiation()),
-        };
+        var type = GetType(symbol).Instantiate(variableInator.Instantiation());
 
         Eq(node, type);
     }
