@@ -173,16 +173,4 @@ public sealed class Compilation
     /// </summary>
     /// <param name="variable">The <see cref="Variable"/> to get the type of.</param>
     public IType TypeOf(Variable variable) => types[variable];
-
-    /// <summary>
-    /// Gets the callsite type of the function in a <see cref="Ast.Expr.Call"/>.
-    /// </summary>
-    /// <param name="call">The <see cref="Ast.Expr.Call"/> to get the callsite function type of.</param>
-    public FuncType CallsiteFunctionTypeOf(Ast.Expr.Call call)
-    {
-        var funcType = TypeOf(call.Function);
-        var argType = TypeOf(call.Argument);
-
-        throw new NotImplementedException();
-    }
 }
